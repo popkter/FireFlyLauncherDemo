@@ -37,13 +37,18 @@ import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
 import com.pop.fireflydeskdemo.ui.theme.Lime
 import com.pop.fireflydeskdemo.ui.theme.Night
 import com.pop.fireflydeskdemo.ui.theme.componentRadius
+import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiState
 import com.pop.fireflydeskdemo.vm.DateTimeUiState
 import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
 import com.pop.fireflydeskdemo.vm.DateViewModel
+import com.pop.fireflydeskdemo.vm.WeatherUiState
+import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiStateSample
+import com.pop.fireflydeskdemo.vm.WeatherViewModel
 
 class MainActivity : ComponentActivity() {
 
     private val dateViewModel by viewModels<DateViewModel>()
+    private val weatherViewModel by viewModels<WeatherViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,12 +58,15 @@ class MainActivity : ComponentActivity() {
             FireFlyDeskDemoTheme {
 
                 val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsState()
+                val weatherUiState by weatherViewModel.weatherUiState.collectAsState()
 
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Night))
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Night)
+                )
 
-                BasicContainer(modifier = Modifier.fillMaxSize(), dateTimeUiState)
+                BasicContainer(modifier = Modifier.fillMaxSize(), dateTimeUiState, weatherUiState)
             }
         }
     }
@@ -77,8 +85,11 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun BasicContainer(modifier: Modifier = Modifier, dateTime: DateTimeUiState = DateTimeUiStateSample) {
-
+fun BasicContainer(
+    modifier: Modifier = Modifier,
+    dateTimeUiState: DateTimeUiState = DateTimeUiStateSample,
+    currentHourWeatherUiState: CurrentHourWeatherUiState = CurrentHourWeatherUiStateSample
+) {
 
     BoxWithConstraints(
         modifier = modifier
@@ -103,17 +114,17 @@ fun BasicContainer(modifier: Modifier = Modifier, dateTime: DateTimeUiState = Da
 
             MainComponent(
                 Modifier.fillMaxSize(),
-                dateTime
+                dateTimeUiState,
+                currentHourWeatherUiState,
             )
         }
 
         TopBar(
             Modifier
                 .padding(top = 50.px.dp, start = 50.px.dp)
-                .height(400.px.dp)
                 .widthIn(710.px.dp, 1910.px.dp)
                 .align(Alignment.TopStart),
-            dateTime
+            dateTimeUiState
         )
 
 

@@ -1,4 +1,6 @@
 package com.pop.fireflydeskdemo.vm
 
-class SceneViewModel {
+import androidx.lifecycle.ViewModel
+
+class SceneViewModel : ViewModel() {
 }

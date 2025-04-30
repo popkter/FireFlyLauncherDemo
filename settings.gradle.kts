@@ -14,6 +14,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven("https://maven.aliyun.com/nexus/content/groups/public/")
         google()
         mavenCentral()
     }
@@ -21,4 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "FireFlyDeskDemo"
 include(":app")
- 
+include(":libnet")

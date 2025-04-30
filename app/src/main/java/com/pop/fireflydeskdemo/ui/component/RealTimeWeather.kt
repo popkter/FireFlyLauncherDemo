@@ -10,14 +10,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.pop.fireflydeskdemo.ext.dp
@@ -26,19 +21,18 @@ import com.pop.fireflydeskdemo.ext.sp
 import com.pop.fireflydeskdemo.ui.theme.Cloud
 import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
 import com.pop.fireflydeskdemo.ui.theme.Grape
-import com.pop.fireflydeskdemo.ui.theme.Lime
 import com.pop.fireflydeskdemo.ui.theme.Mulish
-import com.pop.fireflydeskdemo.ui.theme.Night
-import com.pop.fireflydeskdemo.ui.theme.Orange
-import com.pop.fireflydeskdemo.ui.theme.Sea
-import com.pop.fireflydeskdemo.ui.theme.Sky
-import kotlinx.coroutines.delay
-import java.time.LocalTime
-import kotlin.math.cos
-import kotlin.math.sin
+import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiState
+import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiStateSample
 
 @Composable
-fun RealTimeWeather(modifier: Modifier = Modifier) {
+fun RealTimeWeather(
+    modifier: Modifier = Modifier,
+    currentHourWeatherUiState: CurrentHourWeatherUiState = CurrentHourWeatherUiStateSample
+) {
+
+    val fillColor = currentHourWeatherUiState.weatherDetail.color
+
 
     Box(modifier = modifier) {
         Canvas(
@@ -57,7 +51,7 @@ fun RealTimeWeather(modifier: Modifier = Modifier) {
 
 
             //晴天
-            drawCircle(Orange, 250F, Offset(780F, 840F))
+            drawCircle(fillColor, 250F, Offset(780F, 840F))
 
 
 //            drawCircle(Grape, radius = 50F, center = Offset(centerX, centerY))
@@ -65,11 +59,11 @@ fun RealTimeWeather(modifier: Modifier = Modifier) {
 
         //温度
         Text(
-            text = "15℃",
+            text = "${currentHourWeatherUiState.temp}℃",
             fontSize = 180.px.sp,
             fontFamily = Mulish,
             fontWeight = FontWeight.Light,
-            color = Orange,
+            color = fillColor,
             modifier = Modifier
                 .padding(start = 582.px.dp, bottom = 540.px.dp)
                 .align(Alignment.BottomStart)
@@ -77,10 +71,10 @@ fun RealTimeWeather(modifier: Modifier = Modifier) {
 
         //描述
         Text(
-            text = "晴天",
+            text = currentHourWeatherUiState.weatherDetail.desc,
             fontSize = 240.px.sp,
             fontFamily = Mulish,
-            color = Orange,
+            color = fillColor,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 780.px.dp, end = 420.px.dp)

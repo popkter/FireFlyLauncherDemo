@@ -1,6 +1,5 @@
 package com.pop.fireflydeskdemo.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -64,6 +63,10 @@ fun FireFlyDeskDemoTheme(
 
 val Monoton = FontFamily(
     Font(R.font.monoton_regular)
+)
+
+val TiltWrap = FontFamily(
+    Font(R.font.tiltwarp_regular)
 )
 
 val Mulish = FontFamily(

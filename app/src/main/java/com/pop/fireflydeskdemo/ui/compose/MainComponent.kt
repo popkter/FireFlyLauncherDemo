@@ -50,13 +50,20 @@ import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.ui.theme.Orange
 import com.pop.fireflydeskdemo.ui.theme.Rose
 import com.pop.fireflydeskdemo.ui.theme.componentRadius
+import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiState
 import com.pop.fireflydeskdemo.vm.DateTimeUiState
 import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
+import com.pop.fireflydeskdemo.vm.WeatherUiState
+import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiStateSample
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.abs
 
 @Composable
-fun MainComponent(modifier: Modifier = Modifier, dateTime: DateTimeUiState = DateTimeUiStateSample) {
+fun MainComponent(
+    modifier: Modifier = Modifier,
+    dateTimeUiState: DateTimeUiState = DateTimeUiStateSample,
+    currentHourWeatherUiState: CurrentHourWeatherUiState = CurrentHourWeatherUiStateSample
+) {
 
     val naviController =
         listOf(R.drawable.to_home, R.drawable.to_work, R.drawable.to_favorite, R.drawable.to_search)
@@ -135,11 +142,11 @@ fun MainComponent(modifier: Modifier = Modifier, dateTime: DateTimeUiState = Dat
                     }
 
                     1 -> {
-                        AnalogClock(Modifier.fillMaxSize(), dateTime)
+                        AnalogClock(Modifier.fillMaxSize(), dateTimeUiState)
                     }
 
                     2 -> {
-                        RealTimeWeather(Modifier.fillMaxSize())
+                        RealTimeWeather(Modifier.fillMaxSize(), currentHourWeatherUiState)
                     }
                 }
             }
@@ -192,7 +199,7 @@ fun MainComponent(modifier: Modifier = Modifier, dateTime: DateTimeUiState = Dat
                         fontFamily = Mulish,
                         textAlign = TextAlign.Center
 
-                        )
+                    )
                 }
             }
         }
