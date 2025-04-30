@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -23,20 +21,16 @@ import com.pop.fireflydeskdemo.ui.theme.Night
 import com.pop.fireflydeskdemo.ui.theme.Orange
 import com.pop.fireflydeskdemo.ui.theme.Sea
 import com.pop.fireflydeskdemo.ui.theme.Sky
-import kotlinx.coroutines.delay
-import java.time.LocalTime
+import com.pop.fireflydeskdemo.vm.DateTimeUiState
+import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun AnalogClock(modifier: Modifier = Modifier) {
-    val time by produceState(initialValue = LocalTime.now()) {
-        while (true) {
-            value = LocalTime.now()
-            delay(1000L) // 每秒刷新一次
-        }
-    }
-
+fun AnalogClock(
+    modifier: Modifier = Modifier,
+    dateTimeUiState: DateTimeUiState = DateTimeUiStateSample
+) {
 
     Box(modifier.background(Sea, RoundedCornerShape(50))) {
 
@@ -51,26 +45,25 @@ fun AnalogClock(modifier: Modifier = Modifier) {
             val centerY = size.height / 2F
             val radius = size.width / 2
 
-            val hour = time.hour % 12
-            val minute = time.minute
-            val second = time.second
-
-            // 角度计算
-            val hourAngle = (hour + minute / 60f) * 30f     // 每小时30°
-            val minuteAngle = (minute + second / 60f) * 6f  // 每分钟6°
-            val secondAngle = second * 6f                   // 每秒6°
-
-
             drawCircle(Sky, 750F, Offset(centerX, centerY))
 
-            // 时针
-            drawHand(centerX, centerY, radius * 0.6f, hourAngle, Night, strokeWidth = 20f)
+            with(
+                dateTimeUiState
+            ) {
+                // 角度计算
+                val hourAngle = (hour + minute / 60f) * 30f     // 每小时30°
+                val minuteAngle = (minute + second / 60f) * 6f  // 每分钟6°
+                val secondAngle = second * 6f                   // 每秒6°
 
-            // 分针
-            drawHand(centerX, centerY, radius * 0.7f, minuteAngle, Lime, strokeWidth = 15f)
+                // 时针
+                drawHand(centerX, centerY, radius * 0.6f, hourAngle, Night, strokeWidth = 20f)
 
-            // 秒针
-            drawHand(centerX, centerY, radius * 0.8f, secondAngle, Orange, strokeWidth = 10F)
+                // 分针
+                drawHand(centerX, centerY, radius * 0.7f, minuteAngle, Lime, strokeWidth = 15f)
+
+                // 秒针
+                drawHand(centerX, centerY, radius * 0.8f, secondAngle, Orange, strokeWidth = 10F)
+            }
 
             // 中心点
             drawCircle(Sea, radius = 60f, center = Offset(centerX, centerY))

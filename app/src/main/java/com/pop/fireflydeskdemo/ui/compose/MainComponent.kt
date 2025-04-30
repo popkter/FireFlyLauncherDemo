@@ -1,9 +1,6 @@
 package com.pop.fireflydeskdemo.ui.compose
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,11 +50,13 @@ import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.ui.theme.Orange
 import com.pop.fireflydeskdemo.ui.theme.Rose
 import com.pop.fireflydeskdemo.ui.theme.componentRadius
+import com.pop.fireflydeskdemo.vm.DateTimeUiState
+import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.abs
 
 @Composable
-fun MainComponent(modifier: Modifier = Modifier) {
+fun MainComponent(modifier: Modifier = Modifier, dateTime: DateTimeUiState = DateTimeUiStateSample) {
 
     val naviController =
         listOf(R.drawable.to_home, R.drawable.to_work, R.drawable.to_favorite, R.drawable.to_search)
@@ -136,7 +135,7 @@ fun MainComponent(modifier: Modifier = Modifier) {
                     }
 
                     1 -> {
-                        AnalogClock(Modifier.fillMaxSize())
+                        AnalogClock(Modifier.fillMaxSize(), dateTime)
                     }
 
                     2 -> {

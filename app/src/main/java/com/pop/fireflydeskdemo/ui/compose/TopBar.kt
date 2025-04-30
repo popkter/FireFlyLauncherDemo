@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,26 +31,21 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
 import com.pop.fireflydeskdemo.ui.theme.Cloud
-import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
 import com.pop.fireflydeskdemo.ui.theme.Monoton
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.ui.theme.Night
 import com.pop.fireflydeskdemo.ui.theme.Sea
 import com.pop.fireflydeskdemo.ui.theme.Stone
 import com.pop.fireflydeskdemo.ui.theme.componentRadius
-import kotlinx.coroutines.delay
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Locale
+import com.pop.fireflydeskdemo.vm.DateTimeUiState
+import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
 
 @Composable
-fun TopBar(modifier: Modifier = Modifier) {
+fun TopBar(modifier: Modifier = Modifier, dateTimeUiState: DateTimeUiState = DateTimeUiStateSample) {
     var showNotice by remember { mutableStateOf(false) }
 
     // 动画控制缩放系数
@@ -66,19 +60,6 @@ fun TopBar(modifier: Modifier = Modifier) {
         animationSpec = tween(durationMillis = 200, easing = LinearEasing),
         label = "alpha"
     )
-
-
-    val dateTime by produceState(initialValue = LocalDateTime.now()) {
-        while (true) {
-            value = LocalDateTime.now()
-            delay(1000L)
-        }
-    }
-
-    val timeStr = dateTime.format(DateTimeFormatter.ofPattern("HH : mm"))
-    val monthDayStr = "${dateTime.monthValue}月${dateTime.dayOfMonth}日"
-    val weekdayStr = dateTime.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINA) // "星期二"
-
 
     Column(modifier = modifier) {
 
@@ -133,7 +114,7 @@ fun TopBar(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .size(710.px.dp, 240.px.dp)
                     .align(Alignment.TopStart),
-                text = timeStr,
+                text = dateTimeUiState.time,
                 maxLines = 1,
                 softWrap = false,
                 overflow = TextOverflow.Visible,
@@ -144,7 +125,7 @@ fun TopBar(modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = monthDayStr,
+                text = dateTimeUiState.date,
                 fontSize = 75.px.sp,
                 fontFamily = Mulish,
                 color = Stone,
@@ -154,7 +135,7 @@ fun TopBar(modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = weekdayStr,
+                text = dateTimeUiState.weekday,
                 fontSize = 75.px.sp,
                 fontFamily = Mulish,
                 color = Stone,
@@ -162,20 +143,6 @@ fun TopBar(modifier: Modifier = Modifier) {
                     .align(Alignment.BottomEnd)
                     .alpha(alpha)
             )
-        }
-
-
-    }
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TopPreview() {
-    FireFlyDeskDemoTheme {
-        Column {
-            TopBar()
-            TopBar()
         }
     }
 }

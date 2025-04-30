@@ -5,17 +5,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,18 +37,28 @@ import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
 import com.pop.fireflydeskdemo.ui.theme.Lime
 import com.pop.fireflydeskdemo.ui.theme.Night
 import com.pop.fireflydeskdemo.ui.theme.componentRadius
+import com.pop.fireflydeskdemo.vm.DateTimeUiState
+import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
+import com.pop.fireflydeskdemo.vm.DateViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val dateViewModel by viewModels<DateViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         hideSystemUI()
         setContent {
             FireFlyDeskDemoTheme {
+
+                val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsState()
+
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(Night))
-                BasicContainer(modifier = Modifier.fillMaxSize())
+
+                BasicContainer(modifier = Modifier.fillMaxSize(), dateTimeUiState)
             }
         }
     }
@@ -65,7 +77,7 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun BasicContainer(modifier: Modifier = Modifier) {
+fun BasicContainer(modifier: Modifier = Modifier, dateTime: DateTimeUiState = DateTimeUiStateSample) {
 
 
     BoxWithConstraints(
@@ -90,7 +102,8 @@ fun BasicContainer(modifier: Modifier = Modifier) {
         ) {
 
             MainComponent(
-                Modifier.fillMaxSize()
+                Modifier.fillMaxSize(),
+                dateTime
             )
         }
 
@@ -99,7 +112,8 @@ fun BasicContainer(modifier: Modifier = Modifier) {
                 .padding(top = 50.px.dp, start = 50.px.dp)
                 .height(400.px.dp)
                 .widthIn(710.px.dp, 1910.px.dp)
-                .align(Alignment.TopStart)
+                .align(Alignment.TopStart),
+            dateTime
         )
 
 
