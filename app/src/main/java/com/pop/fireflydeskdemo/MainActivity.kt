@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
@@ -71,13 +72,13 @@ fun BasicContainer(modifier: Modifier = Modifier) {
         modifier = modifier
             .background(
                 color = Lime, shape = RoundedCornerShape(componentRadius)
-            ),
+            )
+            .clip(RoundedCornerShape(componentRadius)),
     ) {
 
         // maxWidth 和 maxHeight 是父容器的约束
         Box(
             modifier = Modifier
-                .offset(x = 220.px.dp, y = -500.px.dp)
                 .then(Modifier.layout { measurable, _ ->
                     // 不传入 parentConstraints，表示忽略父限制
                     val placeable = measurable.measure(Constraints())
@@ -85,12 +86,11 @@ fun BasicContainer(modifier: Modifier = Modifier) {
                         placeable.place(0, 0)
                     }
                 })
-                .size(2200.px.dp, 2200.px.dp)
-                .align(Alignment.TopEnd)
+                .size(2880.px.dp, 2060.px.dp)
         ) {
 
             MainComponent(
-                Modifier.size(2200.px.dp)
+                Modifier.fillMaxSize()
             )
         }
 

@@ -18,6 +18,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
@@ -29,6 +30,7 @@ import com.pop.fireflydeskdemo.ui.theme.Lime
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.ui.theme.Night
 import com.pop.fireflydeskdemo.ui.theme.Orange
+import com.pop.fireflydeskdemo.ui.theme.Sea
 import com.pop.fireflydeskdemo.ui.theme.Sky
 import kotlinx.coroutines.delay
 import java.time.LocalTime
@@ -50,33 +52,46 @@ fun RealTimeWeather(modifier: Modifier = Modifier) {
 
             drawCircle(
                 color = Cloud,
-                radius = size.width / 3
+                radius = 750F
             )
 
-            // 中心点
-            drawCircle(Grape, radius = 20f, center = Offset(centerX, centerY))
+
+            //晴天
+            drawCircle(Orange, 250F, Offset(780F, 840F))
+
+
+//            drawCircle(Grape, radius = 50F, center = Offset(centerX, centerY))
         }
 
-
+        //温度
         Text(
             text = "15℃",
-            fontSize = 80.px.sp,
+            fontSize = 180.px.sp,
             fontFamily = Mulish,
+            fontWeight = FontWeight.Light,
             color = Orange,
             modifier = Modifier
-                .offset(x = -100.px.dp, y = -100.px.dp)
-                .align(Alignment.Center)
-
+                .padding(start = 582.px.dp, bottom = 540.px.dp)
+                .align(Alignment.BottomStart)
         )
 
+        //描述
         Text(
             text = "晴天",
-            fontSize = 160.px.sp,
+            fontSize = 240.px.sp,
             fontFamily = Mulish,
             color = Orange,
             modifier = Modifier
-                .align(Alignment.Center)
-                .padding(top = 200.px.dp, start = 200.px.dp)
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 780.px.dp, end = 420.px.dp)
+        )
+
+        Box(
+            modifier = Modifier
+                .offset(x = -680.px.dp, y = -680.px.dp)
+                .size(100.px.dp)
+                .background(Grape, RoundedCornerShape(50))
+                .align(Alignment.BottomEnd)
         )
     }
 }
