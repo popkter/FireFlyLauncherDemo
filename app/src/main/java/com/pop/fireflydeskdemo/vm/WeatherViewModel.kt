@@ -2,15 +2,16 @@ package com.pop.fireflydeskdemo.vm
 
 import android.util.Log
 import androidx.compose.ui.graphics.Color
+import androidx.core.util.toClosedRange
+import androidx.core.util.toRange
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pop.fireflydeskdemo.ui.theme.Cloud
-import com.pop.fireflydeskdemo.ui.theme.Grape
-import com.pop.fireflydeskdemo.ui.theme.Lime
-import com.pop.fireflydeskdemo.ui.theme.Orange
-import com.pop.fireflydeskdemo.ui.theme.Sea
-import com.pop.fireflydeskdemo.ui.theme.Sky
-import com.pop.fireflydeskdemo.ui.theme.Stone
+import com.pop.fireflydeskdemo.ui.theme.BlueSky
+import com.pop.fireflydeskdemo.ui.theme.PureWhite
+import com.pop.fireflydeskdemo.ui.theme.DarkLoam
+import com.pop.fireflydeskdemo.ui.theme.GraySky
+import com.pop.fireflydeskdemo.ui.theme.WeatherColors
+import com.pop.fireflydeskdemo.ui.theme.WindyGray
 import com.pop.libnet.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -24,6 +25,9 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.seconds
+import com.pop.fireflydeskdemo.R
+import com.pop.fireflydeskdemo.ui.theme.Night
+import kotlin.random.Random
 
 class WeatherViewModel : ViewModel() {
 
@@ -47,14 +51,14 @@ class WeatherViewModel : ViewModel() {
     val weatherUiState: StateFlow<CurrentHourWeatherUiState> = _weatherUiState.asStateFlow()
 
 
-    init {
-        viewModelScope.launch {
-            while (true) {
-                _weatherUiState.value = currentWeatherUiState()
-                delay(30.seconds)
-            }
-        }
-    }
+//    init {
+//        viewModelScope.launch {
+//            while (true) {
+//                _weatherUiState.value = currentWeatherUiState()
+//                delay(30.seconds)
+//            }
+//        }
+//    }
 
     private suspend fun currentWeatherUiState(): CurrentHourWeatherUiState {
         val response = HttpClient.get(VSC_WEATHER_URL + KEY) {
@@ -68,6 +72,16 @@ class WeatherViewModel : ViewModel() {
             weatherDetail = allWeatherDetails.first { it.icon == weather.currentConditions.icon },
             temp = weather.currentConditions.temp,
         )
+    }
+
+
+    fun updateWeather(){
+        viewModelScope.launch {
+            _weatherUiState.value = CurrentHourWeatherUiState(
+                weatherDetail = allWeatherDetails.random(),
+                temp = (0..30).map { it.toDouble() }.random(),
+            )
+        }
     }
 
 
@@ -92,20 +106,59 @@ data class CurrentHourWeatherUiState(
 sealed class WeatherDetail(
     val icon: String,
     val desc: String,
-    val color: Color
+    val color: Color,
+    val background: Color,
+    val iconRes: Int,
 ) {
-    data object Snow : WeatherDetail("snow", "下雪", Cloud)
-    data object Rain : WeatherDetail("rain", "雨天", Sea)
-    data object Fog : WeatherDetail("fog", "大雾", Stone)
-    data object Wind : WeatherDetail("wind", "大风", Lime)
-    data object Cloudy : WeatherDetail("cloudy", "阴天", Stone)
-    data object PartlyCloudy : WeatherDetail("partly-cloudy-day", "多云", Sky)
-    data object PartlyCloudyNight : WeatherDetail("partly-cloudy-night", "多云", Sky)
-    data object ClearDay : WeatherDetail("clear-day", "晴天", Orange)
-    data object ClearNight : WeatherDetail("clear-night", "晴天", Orange)
+    data object Snow :
+        WeatherDetail("snow", "下雪", WeatherColors.SnowyWhite, BlueSky, R.drawable.icon_snowy)
+
+    data object Rain :
+        WeatherDetail("rain", "雨天", WeatherColors.RainyBlue, PureWhite, R.drawable.incon_rainy)
+
+    data object Fog :
+        WeatherDetail("fog", "大雾", WeatherColors.FoggyBlueGray, DarkLoam, R.drawable.icon_foggy)
+
+    data object Wind :
+        WeatherDetail("wind", "大风", WeatherColors.WindyGray, BlueSky, R.drawable.icon_windy)
+
+    data object Cloudy :
+        WeatherDetail("cloudy", "阴天", WeatherColors.CloudyGray, PureWhite, R.drawable.icon_cloudy)
+
+    data object PartlyCloudy : WeatherDetail(
+        "partly-cloudy-day",
+        "多云",
+        WeatherColors.PartlyCloudyWhite,
+        BlueSky,
+        R.drawable.icon_partly_cloudy
+    )
+
+    data object PartlyCloudyNight : WeatherDetail(
+        "partly-cloudy-night",
+        "多云",
+        WeatherColors.PartlyCloudyWhite,
+        BlueSky,
+        R.drawable.icon_partly_cloudy_night
+    )
+
+    data object ClearDay : WeatherDetail(
+        "clear-day",
+        "晴天",
+        WeatherColors.SunnyGold,
+        PureWhite,
+        R.drawable.icon_clear_day
+    )
+
+    data object ClearNight : WeatherDetail(
+        "clear-night",
+        "晴夜",
+        WeatherColors.SunnyGold,
+        PureWhite,
+        R.drawable.icon_clear_night
+    )
 }
 
 val CurrentHourWeatherUiStateSample = CurrentHourWeatherUiState(
-    weatherDetail = WeatherDetail.ClearDay,
+    weatherDetail = WeatherDetail.PartlyCloudy,
     temp = 18.0,
 )

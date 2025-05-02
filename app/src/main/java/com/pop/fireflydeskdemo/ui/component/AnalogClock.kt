@@ -15,12 +15,12 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.tooling.preview.Preview
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
+import com.pop.fireflydeskdemo.ui.theme.BlueSky
 import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
 import com.pop.fireflydeskdemo.ui.theme.Lime
 import com.pop.fireflydeskdemo.ui.theme.Night
 import com.pop.fireflydeskdemo.ui.theme.Orange
-import com.pop.fireflydeskdemo.ui.theme.Sea
-import com.pop.fireflydeskdemo.ui.theme.Sky
+import com.pop.fireflydeskdemo.ui.theme.BlueSea
 import com.pop.fireflydeskdemo.vm.DateTimeUiState
 import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
 import kotlin.math.cos
@@ -32,12 +32,12 @@ fun AnalogClock(
     dateTimeUiState: DateTimeUiState = DateTimeUiStateSample
 ) {
 
-    Box(modifier.background(Sea, RoundedCornerShape(50))) {
+    Box(modifier.background(BlueSea, RoundedCornerShape(50))) {
 
         Canvas(
             modifier = Modifier
                 .size(1500.px.dp)
-                .background(color = Sea, shape = RoundedCornerShape(50))
+                .background(color = BlueSea, shape = RoundedCornerShape(50))
                 .align(Alignment.BottomCenter)
         ) {
 
@@ -45,7 +45,7 @@ fun AnalogClock(
             val centerY = size.height / 2F
             val radius = size.width / 2
 
-            drawCircle(Sky, 750F, Offset(centerX, centerY))
+            drawCircle(BlueSky, 750F, Offset(centerX, centerY))
 
             with(
                 dateTimeUiState
@@ -66,7 +66,7 @@ fun AnalogClock(
             }
 
             // 中心点
-            drawCircle(Sea, radius = 60f, center = Offset(centerX, centerY))
+            drawCircle(BlueSea, radius = 60f, center = Offset(centerX, centerY))
         }
     }
 

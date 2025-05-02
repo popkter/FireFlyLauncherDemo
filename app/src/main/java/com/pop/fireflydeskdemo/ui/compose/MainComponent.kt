@@ -1,5 +1,7 @@
 package com.pop.fireflydeskdemo.ui.compose
 
+import android.util.Log
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,20 +47,20 @@ import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
 import com.pop.fireflydeskdemo.ui.component.AnalogClock
 import com.pop.fireflydeskdemo.ui.component.RealTimeWeather
-import com.pop.fireflydeskdemo.ui.theme.Cloud
 import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.ui.theme.Orange
+import com.pop.fireflydeskdemo.ui.theme.PureWhite
 import com.pop.fireflydeskdemo.ui.theme.Rose
 import com.pop.fireflydeskdemo.ui.theme.componentRadius
 import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiState
+import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiStateSample
 import com.pop.fireflydeskdemo.vm.DateTimeUiState
 import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
-import com.pop.fireflydeskdemo.vm.WeatherUiState
-import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiStateSample
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.abs
 
+private const val TAG = "MainComponent"
 @Composable
 fun MainComponent(
     modifier: Modifier = Modifier,
@@ -75,15 +78,25 @@ fun MainComponent(
 
     var controller by remember { mutableStateOf(naviController) }
 
-
     val virtualCount = Int.MAX_VALUE
 
     val actualCount = 4
-
     //初始图片下标
     val initialIndex = virtualCount / 2
 
+    var actualPageIndex by remember { mutableIntStateOf(0) }
+
     val pagerState = rememberPagerState(initialPage = initialIndex) { virtualCount }
+
+
+    Log.e(TAG, "MainComponent actualPageIndex: $actualPageIndex")
+
+    val qcPanelContentColor by animateColorAsState(
+        targetValue = if (actualPageIndex == 3) currentHourWeatherUiState.weatherDetail.background else PureWhite
+    )
+    val qcPanelBackgroundColor by animateColorAsState(
+        targetValue = if (actualPageIndex == 3) currentHourWeatherUiState.weatherDetail.color else Rose
+    )
 
     LaunchedEffect(Unit) {
 
@@ -107,7 +120,7 @@ fun MainComponent(
             state = pagerState,
         ) { index ->
 
-            val actualIndex = (index - initialIndex).floorMod(actualCount)
+            actualPageIndex = (index - initialIndex).floorMod(actualCount)
 
             // 计算当前页面与目标页面的偏移量（-1 ~ 1）
             val pageOffset =
@@ -129,7 +142,7 @@ fun MainComponent(
                         alpha = scale
                     }, contentAlignment = Alignment.TopEnd
             ) {
-                when (actualIndex) {
+                when (actualPageIndex) {
                     0 -> {
                         Image(
                             painter = painterResource(id = R.drawable.map_capture),
@@ -154,12 +167,15 @@ fun MainComponent(
 
         }
 
-
+        // TODO: 根据当前显示的场景修改QcPanel的颜色
         Row(
             modifier = Modifier
                 .padding(top = 180.px.dp, end = 50.px.dp)
                 .height(200.px.dp)
-                .background(color = Rose, shape = RoundedCornerShape(componentRadius))
+                .background(
+                    color = qcPanelBackgroundColor,
+                    shape = RoundedCornerShape(componentRadius)
+                )
                 .align(Alignment.TopEnd)
                 .padding(horizontal = 50.px.dp)
                 .animateContentSize(),
@@ -182,7 +198,7 @@ fun MainComponent(
                                 .clickable {
 
                                 },
-                            tint = if (icon == R.drawable.to_warn) Orange else Cloud
+                            tint = if (icon == R.drawable.to_warn) Orange else qcPanelContentColor
                         )
                     }
                 }
@@ -194,7 +210,7 @@ fun MainComponent(
                 ) {
                     Text(
                         text = "你似乎来到了一片无人的旷野",
-                        color = Cloud,
+                        color = PureWhite,
                         fontSize = 60.px.sp,
                         fontFamily = Mulish,
                         textAlign = TextAlign.Center

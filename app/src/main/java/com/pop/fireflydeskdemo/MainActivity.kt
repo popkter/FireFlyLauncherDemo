@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,13 +61,15 @@ class MainActivity : ComponentActivity() {
                 val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsState()
                 val weatherUiState by weatherViewModel.weatherUiState.collectAsState()
 
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(Night)
                 )
 
-                BasicContainer(modifier = Modifier.fillMaxSize(), dateTimeUiState, weatherUiState)
+                BasicContainer(modifier = Modifier.fillMaxSize(), dateTimeUiState, weatherUiState,
+                    { weatherViewModel.updateWeather() })
             }
         }
     }
@@ -88,7 +91,8 @@ class MainActivity : ComponentActivity() {
 fun BasicContainer(
     modifier: Modifier = Modifier,
     dateTimeUiState: DateTimeUiState = DateTimeUiStateSample,
-    currentHourWeatherUiState: CurrentHourWeatherUiState = CurrentHourWeatherUiStateSample
+    currentHourWeatherUiState: CurrentHourWeatherUiState = CurrentHourWeatherUiStateSample,
+    updateWeather: () -> Unit = {}
 ) {
 
     BoxWithConstraints(
@@ -139,6 +143,9 @@ fun BasicContainer(
             Modifier
                 .padding(start = 50.px.dp, bottom = 50.px.dp)
                 .align(Alignment.BottomStart)
+                .clickable {
+                    updateWeather()
+                }
         )
 
 
