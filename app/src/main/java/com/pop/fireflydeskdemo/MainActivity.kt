@@ -133,6 +133,7 @@ fun BasicContainer(
         SecondComponent(
             Modifier
                 .padding(start = 50.px.dp, bottom = 300.px.dp)
+                .size(1000.px.dp)
                 .align(Alignment.BottomStart)
         )
 
