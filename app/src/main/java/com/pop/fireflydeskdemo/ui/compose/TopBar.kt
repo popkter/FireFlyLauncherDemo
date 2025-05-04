@@ -30,34 +30,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
 import com.pop.fireflydeskdemo.ui.theme.BlueSea
+import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
 import com.pop.fireflydeskdemo.ui.theme.GraySky
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.ui.theme.PureWhite
 import com.pop.fireflydeskdemo.ui.theme.TiltWrap
 import com.pop.fireflydeskdemo.ui.theme.componentRadius
 import com.pop.fireflydeskdemo.vm.DateViewModel
+import kotlinx.serialization.EncodeDefault
 
 @Composable
 fun TopBar(
-    modifier: Modifier = Modifier, dateViewModel: DateViewModel
+    modifier: Modifier = Modifier, dateViewModel: DateViewModel,default: Boolean = false
 ) {
 
     val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsStateWithLifecycle()
 
     val dateTimeInfo = dateTimeUiState.dateTimeInfo
 
-    var showNotice by remember { mutableStateOf(true) }
+    var showNotice by remember { mutableStateOf(default) }
 
-    val scale by animateFloatAsState(
-        targetValue = if (showNotice) 0.9f else 1f,
-        animationSpec = tween(durationMillis = 200, easing = LinearEasing),
-        label = "scale"
-    )
+//    val scale by animateFloatAsState(
+//        targetValue = if (showNotice) 0.9f else 1f,
+//        animationSpec = tween(durationMillis = 200, easing = LinearEasing),
+//        label = "scale"
+//    )
 
     Column(modifier = modifier) {
 
@@ -92,19 +95,19 @@ fun TopBar(
 
         Text(
             modifier = Modifier
-                .offset(y = -50.px.dp)
+//                .offset(y = -30.px.dp)
                 .wrapContentSize()
                 .clickable {
                     showNotice = !showNotice
                 }
 //                .background(Grape)
-                .graphicsLayer {
+//                .graphicsLayer {
                     // 设置缩放比例
-                    scaleX = scale
-                    scaleY = scale
+//                    scaleX = scale
+//                    scaleY = scale
                     // 设置缩放锚点为左下角
-                    transformOrigin = TransformOrigin(0f, 1f)
-                }
+//                    transformOrigin = TransformOrigin(0f, 1f)
+//                }
             ,
             text = dateTimeInfo.time,
             fontFamily = TiltWrap,
@@ -139,5 +142,16 @@ fun TopBar(
             }
         }
 
+    }
+}
+
+@Composable
+@Preview(widthDp = 1920, heightDp = 1080)
+fun TopBarPreview(){
+    FireFlyDeskDemoTheme {
+        Row {
+            TopBar(dateViewModel = DateViewModel(), default = true)
+            TopBar(dateViewModel = DateViewModel(), default = false)
+        }
     }
 }
