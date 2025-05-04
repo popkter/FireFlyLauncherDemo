@@ -137,6 +137,8 @@ fun MainComponent(
             // 缩放因子，越靠近当前页 scale 越大
             val scale = 0.6f + (1 - abs(pageOffset)) * 0.4f
 
+            val actualIndex = (index - initialIndex).floorMod(actualCount)
+
             Box(
                 modifier = Modifier
                     .offset(x = 900.px.dp, y = -430.px.dp)
@@ -148,8 +150,8 @@ fun MainComponent(
                     }, contentAlignment = Alignment.TopEnd
             ) {
 
-                key(actualPageIndex) {
-                    when (actualPageIndex) {
+                key(actualIndex) {
+                    when (actualIndex) {
                         0 -> {
                             Image(
                                 painter = painterResource(id = R.drawable.map_capture),
