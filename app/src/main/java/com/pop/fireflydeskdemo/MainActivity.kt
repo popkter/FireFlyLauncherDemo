@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -38,12 +37,7 @@ import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
 import com.pop.fireflydeskdemo.ui.theme.Lime
 import com.pop.fireflydeskdemo.ui.theme.Night
 import com.pop.fireflydeskdemo.ui.theme.componentRadius
-import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiState
-import com.pop.fireflydeskdemo.vm.DateTimeUiState
-import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
 import com.pop.fireflydeskdemo.vm.DateViewModel
-import com.pop.fireflydeskdemo.vm.WeatherUiState
-import com.pop.fireflydeskdemo.vm.CurrentHourWeatherUiStateSample
 import com.pop.fireflydeskdemo.vm.WeatherViewModel
 
 class MainActivity : ComponentActivity() {
@@ -58,6 +52,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             FireFlyDeskDemoTheme {
 
+
                 val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsState()
                 val weatherUiState by weatherViewModel.weatherUiState.collectAsState()
 
@@ -68,8 +63,10 @@ class MainActivity : ComponentActivity() {
                         .background(Night)
                 )
 
-                BasicContainer(modifier = Modifier.fillMaxSize(), dateTimeUiState, weatherUiState,
-                    { weatherViewModel.updateWeather() })
+                BasicContainer(
+                    modifier = Modifier.fillMaxSize(), dateViewModel, weatherViewModel,
+                    { weatherViewModel.updateWeather() },
+                )
             }
         }
     }
@@ -90,8 +87,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BasicContainer(
     modifier: Modifier = Modifier,
-    dateTimeUiState: DateTimeUiState = DateTimeUiStateSample,
-    currentHourWeatherUiState: CurrentHourWeatherUiState = CurrentHourWeatherUiStateSample,
+    dateViewModel: DateViewModel,
+    weatherViewModel: WeatherViewModel,
     updateWeather: () -> Unit = {}
 ) {
 
@@ -118,8 +115,8 @@ fun BasicContainer(
 
             MainComponent(
                 Modifier.fillMaxSize(),
-                dateTimeUiState,
-                currentHourWeatherUiState,
+                dateViewModel = dateViewModel,
+                weatherViewModel = weatherViewModel,
             )
         }
 
@@ -128,7 +125,7 @@ fun BasicContainer(
                 .padding(top = 50.px.dp, start = 50.px.dp)
                 .widthIn(710.px.dp, 1910.px.dp)
                 .align(Alignment.TopStart),
-            dateTimeUiState
+            dateViewModel
         )
 
 
@@ -159,6 +156,6 @@ fun BasicContainer(
 @Composable
 fun GreetingPreview() {
     FireFlyDeskDemoTheme {
-        BasicContainer()
+//        BasicContainer()
     }
 }

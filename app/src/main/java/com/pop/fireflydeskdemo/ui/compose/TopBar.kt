@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
@@ -39,13 +40,17 @@ import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.ui.theme.PureWhite
 import com.pop.fireflydeskdemo.ui.theme.TiltWrap
 import com.pop.fireflydeskdemo.ui.theme.componentRadius
-import com.pop.fireflydeskdemo.vm.DateTimeUiState
-import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
+import com.pop.fireflydeskdemo.vm.DateViewModel
 
 @Composable
 fun TopBar(
-    modifier: Modifier = Modifier, dateTimeUiState: DateTimeUiState = DateTimeUiStateSample
+    modifier: Modifier = Modifier, dateViewModel: DateViewModel
 ) {
+
+    val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsStateWithLifecycle()
+
+    val dateTimeInfo = dateTimeUiState.dateTimeInfo
+
     var showNotice by remember { mutableStateOf(true) }
 
     val scale by animateFloatAsState(
@@ -89,7 +94,7 @@ fun TopBar(
             modifier = Modifier
                 .offset(y = -50.px.dp)
                 .wrapContentSize()
-                .clickable{
+                .clickable {
                     showNotice = !showNotice
                 }
 //                .background(Grape)
@@ -101,7 +106,7 @@ fun TopBar(
                     transformOrigin = TransformOrigin(0f, 1f)
                 }
             ,
-            text = dateTimeUiState.time,
+            text = dateTimeInfo.time,
             fontFamily = TiltWrap,
             fontSize = 240.px.sp,
             lineHeight = 240.px.sp,
@@ -119,14 +124,14 @@ fun TopBar(
             ) {
 
                 Text(
-                    text = dateTimeUiState.date,
+                    text = dateTimeInfo.date,
                     fontSize = 75.px.sp,
                     fontFamily = Mulish,
                     color = GraySky,
                 )
 
                 Text(
-                    text = dateTimeUiState.weekday,
+                    text = dateTimeInfo.weekday,
                     fontSize = 75.px.sp,
                     fontFamily = Mulish,
                     color = GraySky,

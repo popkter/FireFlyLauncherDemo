@@ -20,19 +20,16 @@ val DarkLoam = Color(0xFF5C4033)
 val GraySky = Color(0xFFA7B8C4)
 val BlueSky = Color(0xFF8AC1FE)
 
-val WindyGray = Color(0xFF726F6F)
-
 val PureWhite = Color.White
 val Night = Color.Black
 
-object WeatherColors {
-    val RainyBlue = Color(0xFF4B89DC)
-    val SunnyGold = Color(0xFFFFD700)
-    val CloudyGray = Color(0xFFA7B8C4)
-    val PartlyCloudyWhite = Color(0xFFFFFFFF)
-    val SnowyWhite = Color(0xFFF0F8FF)
-    val WindyGray = Color(0xFF726F6F)
-    val FoggyBlueGray = Color(0xFFC3D1D5)
-}
+
+val RainyBlue = Color(0xFF4B89DC)
+val SunnyGold = Color(0xFFFFD700)
+val CloudyGray = Color(0xFFA7B8C4)
+val PartlyCloudyWhite = Color(0xFFFFFFFF)
+val SnowyWhite = Color(0xFFF0F8FF)
+val WindyGray = Color(0xFF726F6F)
+val FoggyBlueGray = Color(0xFFC3D1D5)
 
 
