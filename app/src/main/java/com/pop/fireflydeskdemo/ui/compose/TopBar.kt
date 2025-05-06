@@ -1,24 +1,20 @@
 package com.pop.fireflydeskdemo.ui.compose
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,32 +23,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
-import com.pop.fireflydeskdemo.ui.theme.BlueSea
-import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
-import com.pop.fireflydeskdemo.ui.theme.GraySky
+import com.pop.fireflydeskdemo.ui.theme.AppTheme
 import com.pop.fireflydeskdemo.ui.theme.Mulish
-import com.pop.fireflydeskdemo.ui.theme.PureWhite
 import com.pop.fireflydeskdemo.ui.theme.TiltWrap
-import com.pop.fireflydeskdemo.ui.theme.componentRadius
 import com.pop.fireflydeskdemo.vm.DateViewModel
-import kotlinx.serialization.EncodeDefault
 
 @Composable
 fun TopBar(
-    modifier: Modifier = Modifier, dateViewModel: DateViewModel,default: Boolean = false
+    modifier: Modifier = Modifier, dateViewModel: DateViewModel, default: Boolean = false
 ) {
 
     val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsStateWithLifecycle()
-
-    val dateTimeInfo = dateTimeUiState.dateTimeInfo
 
     var showNotice by remember { mutableStateOf(default) }
 
@@ -71,12 +59,15 @@ fun TopBar(
             Row(
                 modifier = Modifier
                     .height(200.px.dp)
-                    .background(color = BlueSea, shape = RoundedCornerShape(componentRadius))
+                    .background(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = MaterialTheme.shapes.large
+                    )
                     .padding(horizontal = 50.px.dp), verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    tint = PureWhite,
+                    tint = Color.White,
                     contentDescription = "",
                     modifier = Modifier.size(90.px.dp),
                 )
@@ -86,7 +77,7 @@ fun TopBar(
                     maxLines = 1,
                     fontFamily = Mulish,
                     fontSize = 60.px.sp,
-                    color = PureWhite,
+                    color = Color.White,
                     modifier = Modifier.wrapContentWidth(),
                 )
             }
@@ -102,14 +93,14 @@ fun TopBar(
                 }
 //                .background(Grape)
 //                .graphicsLayer {
-                    // 设置缩放比例
+            // 设置缩放比例
 //                    scaleX = scale
 //                    scaleY = scale
-                    // 设置缩放锚点为左下角
+            // 设置缩放锚点为左下角
 //                    transformOrigin = TransformOrigin(0f, 1f)
 //                }
             ,
-            text = dateTimeInfo.time,
+            text = dateTimeUiState.time,
             fontFamily = TiltWrap,
             fontSize = 240.px.sp,
             lineHeight = 240.px.sp,
@@ -127,17 +118,17 @@ fun TopBar(
             ) {
 
                 Text(
-                    text = dateTimeInfo.date,
+                    text = dateTimeUiState.date,
                     fontSize = 75.px.sp,
                     fontFamily = Mulish,
-                    color = GraySky,
+                    color = MaterialTheme.colorScheme.onSecondary,
                 )
 
                 Text(
-                    text = dateTimeInfo.weekday,
+                    text = dateTimeUiState.weekday,
                     fontSize = 75.px.sp,
                     fontFamily = Mulish,
-                    color = GraySky,
+                    color = MaterialTheme.colorScheme.onSecondary,
                 )
             }
         }
@@ -147,8 +138,8 @@ fun TopBar(
 
 @Composable
 @Preview(widthDp = 1920, heightDp = 1080)
-fun TopBarPreview(){
-    FireFlyDeskDemoTheme {
+fun TopBarPreview() {
+    AppTheme {
         Row {
             TopBar(dateViewModel = DateViewModel(), default = true)
             TopBar(dateViewModel = DateViewModel(), default = false)

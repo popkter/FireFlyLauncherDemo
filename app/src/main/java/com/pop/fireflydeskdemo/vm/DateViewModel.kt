@@ -3,8 +3,6 @@ package com.pop.fireflydeskdemo.vm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pop.fireflydeskdemo.R
-import com.pop.fireflydeskdemo.ext.ColorMate
-import com.pop.fireflydeskdemo.vm.DateViewModel.Companion.DATE_TIME
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,20 +15,16 @@ import java.util.Locale
 
 class DateViewModel : ViewModel() {
 
-    companion object{
+    companion object {
         internal const val DATE_TIME = "date_time"
     }
 
     private val _dateTimeUiState = MutableStateFlow(currentTimeUiState())
     val dateTimeUiState: StateFlow<DateTimeUiState> = _dateTimeUiState.asStateFlow()
 
-    val controller =
-        mutableListOf(
-            R.drawable.to_alarm,
-            R.drawable.to_note,
-            R.drawable.to_relax,
-            R.drawable.to_mute
-        )
+    val controller = mutableListOf(
+        R.drawable.to_alarm, R.drawable.to_note, R.drawable.to_relax, R.drawable.to_mute
+    )
 
     init {
         viewModelScope.launch {
@@ -44,38 +38,26 @@ class DateViewModel : ViewModel() {
     private fun currentTimeUiState(): DateTimeUiState {
         val now = LocalDateTime.now()
         return DateTimeUiState(
-            dateTimeInfo = DateTimeInfo(
-                time = now.format(DateTimeFormatter.ofPattern("HH:mm")),
-                date = "${now.monthValue}月 ${now.dayOfMonth}日",
-                weekday = now.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINA),
-                hour = now.hour % 12,
-                minute = now.minute,
-                second = now.second,
-                dateTime = now
-            )
+            time = now.format(DateTimeFormatter.ofPattern("HH:mm")),
+            date = "${now.monthValue}月 ${now.dayOfMonth}日",
+            weekday = now.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINA),
+            hour = now.hour % 12,
+            minute = now.minute,
+            second = now.second,
+            dateTime = now
         )
     }
 
     data class DateTimeUiState(
-        val colorMate: ColorMate = ColorMate.fromKey(DATE_TIME),
-        val dateTimeInfo: DateTimeInfo
-    )
-
-    data class DateTimeInfo(
         val date: String,      // 如 4月 30日
         val time: String,      // 如 14:25
         val weekday: String,    // 如 星期二
-        val hour: Int,
-        val minute: Int,
-        val second: Int,
-        val dateTime: LocalDateTime
+        val hour: Int, val minute: Int, val second: Int, val dateTime: LocalDateTime
     )
 }
 
 
 val DateTimeUiStateSample = DateViewModel.DateTimeUiState(
-    dateTimeInfo = DateViewModel.DateTimeInfo(
-        "4月30日", "14:25", "星期二", hour = 2, minute = 25, second = 10, LocalDateTime.now()
-    )
+    "4月30日", "14:25", "星期二", hour = 2, minute = 25, second = 10, LocalDateTime.now()
 )
 

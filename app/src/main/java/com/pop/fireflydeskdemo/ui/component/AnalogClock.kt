@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +19,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.tooling.preview.Preview
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
-import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
+import com.pop.fireflydeskdemo.ui.theme.AppTheme
 import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
 import com.pop.fireflydeskdemo.vm.DateViewModel
 import kotlin.math.cos
@@ -31,16 +33,20 @@ fun AnalogClock(
     dateTimeUiState: DateViewModel.DateTimeUiState
 ) {
 
-    val colorMate = dateTimeUiState.colorMate
-    val dateTimeInfo = dateTimeUiState.dateTimeInfo
+    val primaryContainerColor = MaterialTheme.colorScheme.primaryContainer
+    val secondaryContainerColor = MaterialTheme.colorScheme.secondaryContainer
+    val tertiaryContainerColor = MaterialTheme.colorScheme.tertiaryContainer
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val secondaryColor = MaterialTheme.colorScheme.secondary
+    val tertiaryColor = MaterialTheme.colorScheme.tertiary
 
-    Box(modifier.background(colorMate.primaryBackgroundColor, RoundedCornerShape(50))) {
+    Box(modifier.background(primaryContainerColor, MaterialTheme.shapes.extraLarge)) {
 
         Canvas(
             modifier = Modifier
                 .size(1500.px.dp)
                 .background(
-                    color = colorMate.secondaryBackgroundColor,
+                    color = secondaryContainerColor,
                     shape = RoundedCornerShape(50)
                 )
                 .align(Alignment.BottomCenter)
@@ -52,7 +58,7 @@ fun AnalogClock(
 
 
             with(
-                dateTimeInfo
+                dateTimeUiState
             ) {
 
                 // 角度计算
@@ -72,7 +78,7 @@ fun AnalogClock(
                     centerY,
                     radius * 0.6f,
                     hourAngle,
-                    colorMate.tertiaryColor,
+                    tertiaryColor,
                     strokeWidth = 20f
                 )
 
@@ -82,7 +88,7 @@ fun AnalogClock(
                     centerY,
                     radius * 0.75f,
                     minuteAngle,
-                    colorMate.secondaryColor,
+                    secondaryColor,
                     strokeWidth = 15f
                 )
 
@@ -92,14 +98,14 @@ fun AnalogClock(
                     centerY,
                     radius * 0.9f,
                     secondAngle,
-                    colorMate.primaryColor,
+                    primaryColor,
                     strokeWidth = 10F
                 )
             }
 
             // 中心点
             drawCircle(
-                colorMate.primaryBackgroundColor,
+                primaryContainerColor,
                 radius = 60f,
                 center = Offset(centerX, centerY)
             )
@@ -131,9 +137,11 @@ private fun DrawScope.drawHand(
 @Composable
 @Preview(widthDp = 978, heightDp = 978)
 fun AnalogClockPreview() {
-    FireFlyDeskDemoTheme {
-        Box {
-            AnalogClock(Modifier.fillMaxSize(), DateTimeUiStateSample)
+    AppTheme {
+        Surface {
+            Box {
+                AnalogClock(Modifier.fillMaxSize(), DateTimeUiStateSample)
+            }
         }
     }
 }

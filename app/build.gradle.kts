@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.pop.fireflydeskdemo"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.pop.fireflydeskdemo"
-        minSdk = 30
-        targetSdk = 36
+        minSdk = 31
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -57,6 +57,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.android.material)
+    implementation (libs.androidx.material.icons.extended)
+    implementation(libs.androidx.ui.text.google.fonts)
 
     implementation(libs.kotlin.reflect)
 

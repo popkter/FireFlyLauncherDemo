@@ -14,13 +14,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
@@ -33,11 +33,9 @@ import com.pop.fireflydeskdemo.ui.compose.BottomBar
 import com.pop.fireflydeskdemo.ui.compose.MainComponent
 import com.pop.fireflydeskdemo.ui.compose.SecondComponent
 import com.pop.fireflydeskdemo.ui.compose.TopBar
-import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
-import com.pop.fireflydeskdemo.ui.theme.Lime
-import com.pop.fireflydeskdemo.ui.theme.Night
-import com.pop.fireflydeskdemo.ui.theme.componentRadius
+import com.pop.fireflydeskdemo.ui.theme.AppTheme
 import com.pop.fireflydeskdemo.vm.DateViewModel
+import com.pop.fireflydeskdemo.vm.DockViewModel
 import com.pop.fireflydeskdemo.vm.WeatherViewModel
 
 class MainActivity : ComponentActivity() {
@@ -45,28 +43,31 @@ class MainActivity : ComponentActivity() {
     private val dateViewModel by viewModels<DateViewModel>()
     private val weatherViewModel by viewModels<WeatherViewModel>()
 
+    private val dockViewModel by viewModels<DockViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         enableEdgeToEdge()
         hideSystemUI()
         setContent {
-            FireFlyDeskDemoTheme {
+            AppTheme {
+                Surface {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black)
+                    )
 
-
-                val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsState()
-                val weatherUiState by weatherViewModel.weatherUiState.collectAsState()
-
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Night)
-                )
-
-                BasicContainer(
-                    modifier = Modifier.fillMaxSize(), dateViewModel, weatherViewModel,
-                    { weatherViewModel.updateWeather() },
-                )
+                    BasicContainer(
+                        modifier = Modifier.fillMaxSize(),
+                        dateViewModel,
+                        weatherViewModel,
+                        dockViewModel,
+                        { weatherViewModel.updateWeather() },
+                    )
+                }
             }
         }
     }
@@ -89,15 +90,16 @@ fun BasicContainer(
     modifier: Modifier = Modifier,
     dateViewModel: DateViewModel,
     weatherViewModel: WeatherViewModel,
+    dockViewModel: DockViewModel,
     updateWeather: () -> Unit = {}
 ) {
 
     BoxWithConstraints(
         modifier = modifier
             .background(
-                color = Lime, shape = RoundedCornerShape(componentRadius)
+                color = MaterialTheme.colorScheme.background
             )
-            .clip(RoundedCornerShape(componentRadius)),
+            .clip(MaterialTheme.shapes.large),
     ) {
 
         // maxWidth 和 maxHeight 是父容器的约束
@@ -143,7 +145,8 @@ fun BasicContainer(
                 .align(Alignment.BottomStart)
                 .clickable {
                     updateWeather()
-                }
+                },
+            dockViewModel
         )
 
 
@@ -156,7 +159,23 @@ fun BasicContainer(
 )
 @Composable
 fun GreetingPreview() {
-    FireFlyDeskDemoTheme {
-//        BasicContainer()
+    AppTheme {
+        AppTheme {
+            Surface {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black)
+                )
+
+//                BasicContainer(
+//                    modifier = Modifier.fillMaxSize(),
+//                    dateViewModel,
+//                    weatherViewModel,
+//                    dockViewModel,
+//                    { weatherViewModel.updateWeather() },
+//                )
+            }
+        }
     }
 }

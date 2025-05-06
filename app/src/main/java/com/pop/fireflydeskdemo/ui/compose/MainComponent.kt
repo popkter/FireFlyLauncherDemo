@@ -21,6 +21,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -43,10 +45,6 @@ import com.pop.fireflydeskdemo.ext.sp
 import com.pop.fireflydeskdemo.ui.component.AnalogClock
 import com.pop.fireflydeskdemo.ui.component.RealTimeWeather
 import com.pop.fireflydeskdemo.ui.theme.Mulish
-import com.pop.fireflydeskdemo.ui.theme.Orange
-import com.pop.fireflydeskdemo.ui.theme.PureWhite
-import com.pop.fireflydeskdemo.ui.theme.Rose
-import com.pop.fireflydeskdemo.ui.theme.componentRadius
 import com.pop.fireflydeskdemo.vm.DateViewModel
 import com.pop.fireflydeskdemo.vm.WeatherViewModel
 import kotlin.math.abs
@@ -101,25 +99,26 @@ fun MainComponent(
 
     val qcPanelBackgroundColor by transition.animateColor(label = "BackgroundColor") { page ->
         when (page) {
-            0 -> Rose
-            1 -> dateTimeUiState.colorMate.secondaryColor
-            2 -> weatherUiState.colorMate.secondaryColor
-            else -> Rose
+            0 -> MaterialTheme.colorScheme.secondary
+            1 -> MaterialTheme.colorScheme.secondary
+            2 -> MaterialTheme.colorScheme.secondary
+            else -> MaterialTheme.colorScheme.secondary
         }
+
     }
 
     val qcPanelContentColor by transition.animateColor(label = "ContentColor") { page ->
         when (page) {
-            0 -> PureWhite
-            1 -> dateTimeUiState.colorMate.secondaryBackgroundColor
-            2 -> weatherUiState.colorMate.primaryColor
-            else -> PureWhite
+            0 -> MaterialTheme.colorScheme.onSecondary
+            1 -> MaterialTheme.colorScheme.onSecondary
+            2 -> MaterialTheme.colorScheme.onSecondary
+            else -> MaterialTheme.colorScheme.onSecondary
         }
     }
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(componentRadius))
+            .clip(MaterialTheme.shapes.large)
             .clipToBounds()
     ) {
 
@@ -184,7 +183,7 @@ fun MainComponent(
                 .padding(top = 180.px.dp, end = 50.px.dp)
                 .background(
                     color = qcPanelBackgroundColor,
-                    shape = RoundedCornerShape(componentRadius)
+                    shape = MaterialTheme.shapes.large
                 )
                 .align(Alignment.TopEnd)
                 .padding(horizontal = 50.px.dp)
@@ -207,7 +206,7 @@ fun MainComponent(
                                 .clickable {
 
                                 },
-                            tint = if (icon == R.drawable.to_warn) Orange else qcPanelContentColor
+                            tint = if (icon == R.drawable.to_warn) Color.Red else qcPanelContentColor
                         )
                     }
                 }
@@ -219,7 +218,7 @@ fun MainComponent(
                 ) {
                     Text(
                         text = "你似乎来到了一片无人的旷野",
-                        color = PureWhite,
+                        color = Color.White,
                         fontSize = 60.px.sp,
                         fontFamily = Mulish,
                         textAlign = TextAlign.Center

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pop.fireflydeskdemo.R
-import com.pop.fireflydeskdemo.ext.ColorMate
 import com.pop.libnet.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -62,21 +61,15 @@ class WeatherViewModel : ViewModel() {
         val json = Json { ignoreUnknownKeys = true }
         val weather = json.decodeFromString<WeatherModel>(response.bodyAsText())
         Log.e(TAG, "currentWeatherUiState: $weather")
-        return WeatherUiState(
-            colorMate = ColorMate.fromKey(weather.currentConditions.icon),
-            weatherInfo = WeatherInfo.fromKey(weather.currentConditions.icon)
-                .copy(temp = weather.currentConditions.temp),
-        )
+        return WeatherUiState.fromKey(weather.currentConditions.icon)
+            .copy(temp = weather.currentConditions.temp)
     }
 
 
     fun updateWeather() {
         viewModelScope.launch {
-            val data = WeatherInfo.all.random()
-            _weatherUiState.value = WeatherUiState(
-                weatherInfo = data.copy(temp = (0..30).map { it.toDouble() }.random()),
-                colorMate = ColorMate.fromKey(data.key),
-            )
+            val data = WeatherUiState.all.random()
+            _weatherUiState.value = data.copy(temp = (0..30).map { it.toDouble() }.random())
         }
     }
 
@@ -90,50 +83,43 @@ class WeatherViewModel : ViewModel() {
         val icon: String, val temp: Double
     )
 
-
     data class WeatherUiState(
-        val colorMate: ColorMate, val weatherInfo: WeatherInfo
-    )
-
-    data class WeatherInfo(
         val key: String,
         val desc: String,
         val iconRes: Int,
         val temp: Double = 0.0
     ) {
         companion object {
-            val snow = WeatherInfo(SNOW, "下雪", R.drawable.icon_snowy)
+            val snow = WeatherUiState(SNOW, "雪", R.drawable.icon_snowy)
 
-            val rain = WeatherInfo(RAIN, "雨天", R.drawable.incon_rainy)
+            val rain = WeatherUiState(RAIN, "雨天", R.drawable.incon_rainy)
 
-            val fog = WeatherInfo(FOG, "大雾", R.drawable.icon_foggy)
+            val fog = WeatherUiState(FOG, "大雾", R.drawable.icon_foggy)
 
-            val wind = WeatherInfo(WIND, "大风", R.drawable.icon_windy)
+            val wind = WeatherUiState(WIND, "大风", R.drawable.icon_windy)
 
-            val cloudy = WeatherInfo(CLOUDY, "阴天", R.drawable.icon_cloudy)
+            val cloudy = WeatherUiState(CLOUDY, "阴天", R.drawable.icon_cloudy)
 
             val partlyCloudy =
-                WeatherInfo(PARTLY_CLOUDY_DAY, "多云", R.drawable.icon_partly_cloudy)
+                WeatherUiState(PARTLY_CLOUDY_DAY, "多云", R.drawable.icon_partly_cloudy)
 
             val partlyCloudyNight =
-                WeatherInfo(PARTLY_CLOUDY_NIGHT, "多云", R.drawable.icon_partly_cloudy_night)
+                WeatherUiState(PARTLY_CLOUDY_NIGHT, "多云", R.drawable.icon_partly_cloudy_night)
 
-            val clearDay = WeatherInfo(CLEAR_DAY, "晴天", R.drawable.icon_clear_day)
+            val clearDay = WeatherUiState(CLEAR_DAY, "晴天", R.drawable.icon_clear_day)
 
-            val clearNight = WeatherInfo(CLEAR_NIGHT, "晴夜", R.drawable.icon_clear_night)
+            val clearNight = WeatherUiState(CLEAR_NIGHT, "晴夜", R.drawable.icon_clear_night)
 
 
             val all = listOf(
                 snow, rain, fog, wind, cloudy, partlyCloudy, partlyCloudyNight, clearDay, clearNight
             )
 
-            fun fromKey(key: String): WeatherInfo = all.firstOrNull { it.key == key } ?: error("No WeatherInfo found for key: $key")
+            fun fromKey(key: String): WeatherUiState =
+                all.firstOrNull { it.key == key } ?: error("No WeatherInfo found for key: $key")
         }
     }
 }
 
 
-val WeatherUiStateSample = WeatherViewModel.WeatherUiState(
-    weatherInfo = WeatherViewModel.WeatherInfo.snow.copy(temp = 18.0),
-    colorMate = ColorMate.Snow,
-)
+val WeatherUiStateSample = WeatherViewModel.WeatherUiState.snow.copy(temp = 18.0)

@@ -2,9 +2,7 @@ package com.pop.fireflydeskdemo.ui.compose
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,9 +17,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,10 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,14 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
-import com.pop.fireflydeskdemo.ui.theme.BlueSea
-import com.pop.fireflydeskdemo.ui.theme.BlueSky
-import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
-import com.pop.fireflydeskdemo.ui.theme.Grape
-import com.pop.fireflydeskdemo.ui.theme.Lime
+import com.pop.fireflydeskdemo.ui.theme.AppTheme
 import com.pop.fireflydeskdemo.ui.theme.Mulish
-import com.pop.fireflydeskdemo.ui.theme.PureWhite
-import com.pop.fireflydeskdemo.ui.theme.SunnyGold
 
 @Composable
 fun SecondComponent(modifier: Modifier = Modifier) {
@@ -77,8 +68,7 @@ fun SecondComponent(modifier: Modifier = Modifier) {
                 transformOrigin = TransformOrigin(0f, 1f)
             }
             .clip(RoundedCornerShape(50))
-            .background(Grape)
-        ,
+            .background(MaterialTheme.colorScheme.secondaryContainer),
 //            .clickable { scaled = !scaled } // 点击触发缩放
         contentAlignment = Alignment.Center
     ) {
@@ -111,7 +101,7 @@ fun SecondComponent(modifier: Modifier = Modifier) {
                     fontFamily = Mulish,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    color = PureWhite,
+                    color = Color.White,
                     modifier = Modifier
                         .wrapContentWidth()
                         .align(Alignment.CenterHorizontally)
@@ -121,7 +111,7 @@ fun SecondComponent(modifier: Modifier = Modifier) {
                     text = "张杰",
                     fontSize = 60.px.sp,
                     fontFamily = Mulish,
-                    color = PureWhite,
+                    color = Color.White,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -141,19 +131,19 @@ fun SecondComponent(modifier: Modifier = Modifier) {
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
-                    tint = BlueSky,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     contentDescription = "",
                     modifier = Modifier.size(240.px.dp),
                 )
                 Icon(
                     imageVector = Icons.Rounded.PlayArrow,
-                    tint = BlueSky,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     contentDescription = "",
                     modifier = Modifier.size(240.px.dp)
                 )
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
-                    tint = BlueSky,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     contentDescription = "",
                     modifier = Modifier.size(240.px.dp)
                 )
@@ -169,7 +159,7 @@ fun SecondComponent(modifier: Modifier = Modifier) {
                     text = "别再沉醉 别再枯萎",
                     fontSize = 50.px.sp,
                     fontFamily = Mulish,
-                    color = PureWhite,
+                    color = Color.White,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -184,7 +174,7 @@ fun SecondComponent(modifier: Modifier = Modifier) {
                     text = "继续沉醉 自我迂回",
                     fontSize = 50.px.sp,
                     fontFamily = Mulish,
-                    color = PureWhite,
+                    color = Color.White,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -197,7 +187,7 @@ fun SecondComponent(modifier: Modifier = Modifier) {
                     text = "最后品味 永恒的滋味",
                     fontSize = 50.px.sp,
                     fontFamily = Mulish,
-                    color = PureWhite,
+                    color = Color.White,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -220,7 +210,7 @@ fun SecondComponent(modifier: Modifier = Modifier) {
 @Preview(widthDp = 978, heightDp = 978)
 @Composable
 fun SecondComponentPreview() {
-    FireFlyDeskDemoTheme {
+    AppTheme {
         SecondComponent()
     }
 }

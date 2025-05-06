@@ -12,8 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
-import com.pop.fireflydeskdemo.ui.theme.FireFlyDeskDemoTheme
+import com.pop.fireflydeskdemo.ui.theme.AppTheme
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.vm.WeatherUiStateSample
 import com.pop.fireflydeskdemo.vm.WeatherViewModel
@@ -34,26 +35,28 @@ fun RealTimeWeather(
     modifier: Modifier = Modifier,
     weatherUiState: WeatherViewModel.WeatherUiState
 ) {
-    val colorMate = weatherUiState.colorMate
-    val weatherInfo = weatherUiState.weatherInfo
+
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(colorMate.primaryBackgroundColor, RoundedCornerShape(50))
+            .background(MaterialTheme.colorScheme.background, MaterialTheme.shapes.extraLarge)
     ) {
         AnimatedContent(
-            targetState = colorMate to weatherInfo.iconRes,
+            targetState = weatherUiState.iconRes,
             modifier = Modifier
                 .size(1500.px.dp)
-                .background(colorMate.primaryColor, RoundedCornerShape(50))
+                .background(
+                    MaterialTheme.colorScheme.primaryContainer,
+                    MaterialTheme.shapes.extraLarge
+                )
                 .align(Alignment.Center),
             transitionSpec = {
                 // 定义进入和退出动画
                 (slideInVertically { height -> -height } + fadeIn()).togetherWith(
                     slideOutVertically { height -> -height } + fadeOut())
             }
-        ) { (colorMate, res) ->
+        ) { res ->
 
             Box(
                 Modifier.fillMaxSize()
@@ -62,7 +65,7 @@ fun RealTimeWeather(
                 Icon(
                     painter = painterResource(res),
                     contentDescription = "",
-                    tint = colorMate.secondaryColor,
+                    tint = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier
                         .offset(x = 250.px.dp, y = 310.px.dp)
                         .size(500.px.dp)
@@ -71,7 +74,7 @@ fun RealTimeWeather(
         }
 
         AnimatedContent(
-            targetState = colorMate.secondaryColor to weatherInfo.temp,
+            targetState = weatherUiState.temp,
             transitionSpec = {
                 // 定义进入和退出动画
                 (slideInVertically { height -> -height } + fadeIn()).togetherWith(slideOutVertically { height -> height } + fadeOut())
@@ -79,7 +82,7 @@ fun RealTimeWeather(
             modifier = Modifier
                 .padding(start = 582.px.dp, bottom = 540.px.dp)
                 .align(Alignment.BottomStart)
-        ) { (iconColor, temp) ->
+        ) { temp ->
 
             //温度
             Text(
@@ -87,7 +90,7 @@ fun RealTimeWeather(
                 fontSize = 180.px.sp,
                 fontFamily = Mulish,
                 fontWeight = FontWeight.Light,
-                color = iconColor
+                color = MaterialTheme.colorScheme.onPrimary,
             )
 
         }
@@ -95,7 +98,7 @@ fun RealTimeWeather(
 
 
         AnimatedContent(
-            targetState = colorMate.secondaryColor to weatherInfo.desc,
+            targetState = weatherUiState.desc,
             transitionSpec = {
                 // 定义进入和退出动画
                 (slideInVertically { height -> -height } + fadeIn()).togetherWith(slideOutVertically { height -> height } + fadeOut())
@@ -103,11 +106,14 @@ fun RealTimeWeather(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 780.px.dp, end = 420.px.dp)
-        ) { (iconColor, desc) ->
+        ) { desc ->
 
             //描述
             Text(
-                text = desc, fontSize = 240.px.sp, fontFamily = Mulish, color = iconColor
+                text = desc,
+                fontSize = 240.px.sp,
+                fontFamily = Mulish,
+                color = MaterialTheme.colorScheme.onPrimary,
             )
         }
     }
@@ -119,9 +125,11 @@ fun RealTimeWeather(
     widthDp = 978, heightDp = 978
 )
 fun RealTimeWeatherPreview() {
-    FireFlyDeskDemoTheme {
-        Box {
-            RealTimeWeather(weatherUiState = WeatherUiStateSample)
+    AppTheme {
+        Surface {
+            Box {
+                RealTimeWeather(weatherUiState = WeatherUiStateSample)
+            }
         }
     }
 }
