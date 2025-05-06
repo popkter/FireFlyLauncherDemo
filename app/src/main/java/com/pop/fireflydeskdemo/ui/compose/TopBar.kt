@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,6 +30,8 @@ import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
 import com.pop.fireflydeskdemo.ui.theme.AppTheme
+import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
+import com.pop.fireflydeskdemo.ui.theme.LocalTextColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.ui.theme.TiltWrap
 import com.pop.fireflydeskdemo.vm.DateViewModel
@@ -50,6 +51,9 @@ fun TopBar(
 //        label = "scale"
 //    )
 
+    val colorScheme = LocalFireFlyColors.current
+    val textColors = LocalTextColors.current
+
     Column(modifier = modifier) {
 
         AnimatedVisibility(
@@ -60,14 +64,14 @@ fun TopBar(
                 modifier = Modifier
                     .height(200.px.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = colorScheme.blueSea,
                         shape = MaterialTheme.shapes.large
                     )
                     .padding(horizontal = 50.px.dp), verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    tint = Color.White,
+                    tint = textColors.light,
                     contentDescription = "",
                     modifier = Modifier.size(90.px.dp),
                 )
@@ -77,7 +81,7 @@ fun TopBar(
                     maxLines = 1,
                     fontFamily = Mulish,
                     fontSize = 60.px.sp,
-                    color = Color.White,
+                    color = textColors.light,
                     modifier = Modifier.wrapContentWidth(),
                 )
             }
@@ -104,7 +108,9 @@ fun TopBar(
             fontFamily = TiltWrap,
             fontSize = 240.px.sp,
             lineHeight = 240.px.sp,
-            textAlign = TextAlign.Start)
+            textAlign = TextAlign.Start,
+            color = textColors.dark
+        )
 
 
         AnimatedVisibility(
@@ -121,14 +127,14 @@ fun TopBar(
                     text = dateTimeUiState.date,
                     fontSize = 75.px.sp,
                     fontFamily = Mulish,
-                    color = MaterialTheme.colorScheme.onSecondary,
+                    color = textColors.dark
                 )
 
                 Text(
                     text = dateTimeUiState.weekday,
                     fontSize = 75.px.sp,
                     fontFamily = Mulish,
-                    color = MaterialTheme.colorScheme.onSecondary,
+                    color = textColors.dark
                 )
             }
         }

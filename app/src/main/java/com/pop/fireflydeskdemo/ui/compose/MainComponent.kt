@@ -42,20 +42,29 @@ import com.pop.fireflydeskdemo.R
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
-import com.pop.fireflydeskdemo.ui.component.AnalogClock
-import com.pop.fireflydeskdemo.ui.component.RealTimeWeather
+import com.pop.fireflydeskdemo.ui.main_component.AnalogClock
+import com.pop.fireflydeskdemo.ui.main_component.RealTimeWeather
+import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
+import com.pop.fireflydeskdemo.ui.theme.LocalWeatherColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.vm.DateViewModel
 import com.pop.fireflydeskdemo.vm.WeatherViewModel
+import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.CLEAR_DAY
+import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.CLEAR_NIGHT
+import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.CLOUDY
+import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.FOG
+import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.PARTLY_CLOUDY_DAY
+import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.PARTLY_CLOUDY_NIGHT
+import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.RAIN
+import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.SNOW
+import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.WIND
 import kotlin.math.abs
 
 private const val TAG = "MainComponent"
 
 @Composable
 fun MainComponent(
-    modifier: Modifier = Modifier,
-    dateViewModel: DateViewModel,
-    weatherViewModel: WeatherViewModel
+    modifier: Modifier = Modifier, dateViewModel: DateViewModel, weatherViewModel: WeatherViewModel
 ) {
 
     val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsStateWithLifecycle()
@@ -81,9 +90,7 @@ fun MainComponent(
 
     val controllerMap = remember {
         mapOf(
-            0 to naviController,
-            1 to dateViewModel.controller,
-            2 to weatherViewModel.controller
+            0 to naviController, 1 to dateViewModel.controller, 2 to weatherViewModel.controller
         )
     }
 
@@ -93,26 +100,59 @@ fun MainComponent(
         }
     }
 
+    val fireFlyColors = LocalFireFlyColors.current
+    val weatherColors = LocalWeatherColors.current
+
     Log.e(TAG, "MainComponent actualPageIndex: $actualPageIndex")
 
     val transition = updateTransition(targetState = actualPageIndex, label = "PageTransition")
 
-    val qcPanelBackgroundColor by transition.animateColor(label = "BackgroundColor") { page ->
+    val primaryColor by transition.animateColor(label = "BackgroundColor") { page ->
         when (page) {
-            0 -> MaterialTheme.colorScheme.secondary
-            1 -> MaterialTheme.colorScheme.secondary
-            2 -> MaterialTheme.colorScheme.secondary
-            else -> MaterialTheme.colorScheme.secondary
+            0 -> fireFlyColors.rose
+            1 -> fireFlyColors.lime
+            2 -> {
+                when (weatherUiState.key) {
+                    SNOW -> weatherColors.snowyWhite
+                    RAIN -> weatherColors.rainyBlue
+                    FOG -> weatherColors.foggyBlueGray
+                    WIND -> weatherColors.windyGray
+                    CLOUDY -> weatherColors.cloudyGray
+
+                    PARTLY_CLOUDY_DAY, PARTLY_CLOUDY_NIGHT -> weatherColors.partlyCloudyWhite
+
+                    CLEAR_DAY, CLEAR_NIGHT -> weatherColors.clearGold
+
+                    else -> weatherColors.cloudyGray
+                }
+            }
+
+            else -> fireFlyColors.rose
         }
 
     }
 
-    val qcPanelContentColor by transition.animateColor(label = "ContentColor") { page ->
+    val secondaryColor by transition.animateColor(label = "ContentColor") { page ->
         when (page) {
-            0 -> MaterialTheme.colorScheme.onSecondary
-            1 -> MaterialTheme.colorScheme.onSecondary
-            2 -> MaterialTheme.colorScheme.onSecondary
-            else -> MaterialTheme.colorScheme.onSecondary
+            0 -> fireFlyColors.light
+            1 -> fireFlyColors.blueSky
+            2 -> {
+                when (weatherUiState.key) {
+                    SNOW -> fireFlyColors.blueSky
+                    RAIN -> fireFlyColors.light
+                    FOG -> fireFlyColors.darkLoam
+                    WIND -> fireFlyColors.light
+                    CLOUDY -> fireFlyColors.light
+
+                    PARTLY_CLOUDY_DAY, PARTLY_CLOUDY_NIGHT -> fireFlyColors.blueSky
+
+                    CLEAR_DAY, CLEAR_NIGHT -> fireFlyColors.light
+
+                    else -> fireFlyColors.light
+                }
+            }
+
+            else -> fireFlyColors.light
         }
     }
 
@@ -129,8 +169,7 @@ fun MainComponent(
             // 计算当前页面与目标页面的偏移量（-1 ~ 1）
             val pageOffset =
                 ((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction).coerceIn(
-                    -1f,
-                    1f
+                    -1f, 1f
                 )
 
             // 缩放因子，越靠近当前页 scale 越大
@@ -163,11 +202,25 @@ fun MainComponent(
                         }
 
                         1 -> {
-                            AnalogClock(Modifier.fillMaxSize(), dateTimeUiState)
+                            AnalogClock(
+                                Modifier.fillMaxSize(),
+                                dateTimeUiState,
+                                fireFlyColors.blueSky,
+                                fireFlyColors.blueSea,
+                                fireFlyColors.orange,
+                                fireFlyColors.lime,
+                                fireFlyColors.night
+                            )
                         }
 
                         2 -> {
-                            RealTimeWeather(Modifier.fillMaxSize(), weatherUiState)
+                            RealTimeWeather(
+                                Modifier.fillMaxSize(),
+                                weatherUiState,
+                                fireFlyColors.grape,
+                                primaryColor,
+                                secondaryColor
+                            )
                         }
                     }
                 }
@@ -182,8 +235,7 @@ fun MainComponent(
             modifier = Modifier
                 .padding(top = 180.px.dp, end = 50.px.dp)
                 .background(
-                    color = qcPanelBackgroundColor,
-                    shape = MaterialTheme.shapes.large
+                    color = primaryColor, shape = MaterialTheme.shapes.large
                 )
                 .align(Alignment.TopEnd)
                 .padding(horizontal = 50.px.dp)
@@ -192,8 +244,7 @@ fun MainComponent(
         ) {
             if (controller.isNotEmpty()) {
                 LazyRow(
-                    modifier = Modifier
-                        .height(200.px.dp),
+                    modifier = Modifier.height(200.px.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(80.px.dp),
                 ) {
@@ -206,15 +257,13 @@ fun MainComponent(
                                 .clickable {
 
                                 },
-                            tint = if (icon == R.drawable.to_warn) Color.Red else qcPanelContentColor
+                            tint = if (icon == R.drawable.to_warn) Color.Red else secondaryColor
                         )
                     }
                 }
             } else {
                 Box(
-                    modifier = Modifier
-                        .height(200.px.dp),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.height(200.px.dp), contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "你似乎来到了一片无人的旷野",

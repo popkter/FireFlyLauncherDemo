@@ -1,6 +1,5 @@
 package com.pop.fireflydeskdemo.ui.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -8,7 +7,62 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+
+
+data class FireFlyColors(
+    val lime: Color,
+    val rose: Color,
+    val grape: Color,
+    val orange: Color,
+    val yellow: Color,
+
+    val blueSea: Color,
+    val darkLoam: Color,
+    val graySky: Color,
+    val blueSky: Color,
+
+    val light: Color,
+    val night: Color,
+)
+
+val FireFlyColorsLight = FireFlyColors(
+    lime = LimeLight,
+    rose = RoseLight,
+    grape = GrapeLight,
+    orange = OrangeLight,
+    yellow = SunnyGoldLight,
+
+    blueSea = BlueSeaLight,
+    darkLoam = DarkLoamLight,
+    graySky = GraySkyLight,
+    blueSky = BlueSkyLight,
+
+    light = PureWhiteLight,
+    night = NightLight
+)
+
+val FireFlyColorsDark = FireFlyColors(
+    lime = LimeDark,
+    rose = RoseDark,
+    grape = GrapeDark,
+    orange = OrangeDark,
+    yellow = SunnyGoldDark,
+
+    blueSea = BlueSeaDark,
+    darkLoam = DarkLoamDark,
+    graySky = GraySkyDark,
+    blueSky = BlueSkyDark,
+
+    light = PureWhiteDark,
+    night = NightDark
+)
+
+val LocalFireFlyColors = staticCompositionLocalOf { FireFlyColorsLight }
+
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -238,6 +292,81 @@ private val highContrastDarkColorScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
 )
 
+data class WeatherColors(
+    val clearGold: Color,
+    val rainyBlue: Color,
+    val cloudyGray: Color,
+    val partlyCloudyWhite: Color,
+    val snowyWhite: Color,
+    val windyGray: Color,
+    val foggyBlueGray: Color
+)
+
+private val WeatherColorsLight = WeatherColors(
+    clearGold = SunnyGoldLight,
+    rainyBlue = RainyBlueLight,
+    cloudyGray = CloudyGrayLight,
+    partlyCloudyWhite = PartlyCloudyWhiteLight,
+    snowyWhite = SnowyWhiteLight,
+    windyGray = WindyGrayLight,
+    foggyBlueGray = FoggyBlueGrayLight
+)
+
+private val WeatherColorsDark = WeatherColors(
+    clearGold = SunnyGoldDark,
+    rainyBlue = RainyBlueDark,
+    cloudyGray = CloudyGrayDark,
+    partlyCloudyWhite = PartlyCloudyWhiteDark,
+    snowyWhite = SnowyWhiteDark,
+    windyGray = WindyGrayDark,
+    foggyBlueGray = FoggyBlueGrayDark
+)
+
+val LocalWeatherColors = staticCompositionLocalOf { WeatherColorsLight }
+
+
+data class TextColors(
+    val light: Color,
+    val onLight: Color,
+    val dark: Color,
+    val onDark: Color,
+    val gray: Color,
+    val onGray: Color,
+    val warn: Color,
+    val onWarn: Color,
+    val error: Color,
+    val onError: Color
+)
+
+private val TextColorsLight = TextColors(
+    light = Color.White,
+    onLight = Color.Black,
+    dark = Color.Black,
+    onDark = Color.White,
+    gray = Color.LightGray,
+    onGray = Color.DarkGray,
+    warn = OrangeLight,
+    onWarn = OrangeDark,
+    error = Color.Red,
+    onError = Color.Green
+)
+
+private val TextColorsDark = TextColors(
+    light = Color.Black,
+    onLight = Color.White,
+    dark = Color.White,
+    onDark = Color.Black,
+    gray = Color.DarkGray,
+    onGray = Color.LightGray,
+    warn = OrangeDark,
+    onWarn = OrangeLight,
+    error = Color.Green,
+    onError = Color.Red
+)
+
+val LocalTextColors = staticCompositionLocalOf { TextColorsLight }
+
+
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -246,15 +375,30 @@ fun AppTheme(
     content: @Composable() () -> Unit
 ) {
 
+    val colorScheme = if (darkTheme) darkScheme else lightScheme
 
-    val context = LocalContext.current
-    val colorScheme = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+//    val context = LocalContext.current
+//    val colorScheme = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = AppTypography,
-        shapes = shapes,
-        content = content
-    )
+
+    val fireFlyColors = if (darkTheme) FireFlyColorsDark else FireFlyColorsLight
+
+    val weatherColors = if (darkTheme) WeatherColorsDark else WeatherColorsLight
+
+    val textColors = if (darkTheme) TextColorsDark else TextColorsLight
+
+    CompositionLocalProvider(
+        LocalFireFlyColors provides fireFlyColors,
+        LocalWeatherColors provides weatherColors,
+        LocalTextColors provides textColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            shapes = shapes,
+            content = content
+        )
+    }
+
 }
 

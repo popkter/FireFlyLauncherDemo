@@ -90,7 +90,7 @@ class WeatherViewModel : ViewModel() {
         val temp: Double = 0.0
     ) {
         companion object {
-            val snow = WeatherUiState(SNOW, "雪", R.drawable.icon_snowy)
+            val snow = WeatherUiState(SNOW, "雪天", R.drawable.icon_snowy)
 
             val rain = WeatherUiState(RAIN, "雨天", R.drawable.incon_rainy)
 

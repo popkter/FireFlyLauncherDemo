@@ -1,14 +1,12 @@
-package com.pop.fireflydeskdemo.ui.component
+package com.pop.fireflydeskdemo.ui.main_component
 
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ui.theme.AppTheme
-import com.pop.fireflydeskdemo.vm.DateTimeUiStateSample
 import com.pop.fireflydeskdemo.vm.DateViewModel
 import kotlin.math.cos
 import kotlin.math.sin
@@ -30,23 +27,22 @@ private const val TAG = "AnalogClock"
 @Composable
 fun AnalogClock(
     modifier: Modifier = Modifier,
-    dateTimeUiState: DateViewModel.DateTimeUiState
+    dateTimeUiState: DateViewModel.DateTimeUiState,
+    containerColor: Color,
+    contentColor: Color,
+    primaryColor: Color,
+    secondaryColor: Color,
+    tertiaryColor: Color
 ) {
 
-    val primaryContainerColor = MaterialTheme.colorScheme.primaryContainer
-    val secondaryContainerColor = MaterialTheme.colorScheme.secondaryContainer
-    val tertiaryContainerColor = MaterialTheme.colorScheme.tertiaryContainer
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val secondaryColor = MaterialTheme.colorScheme.secondary
-    val tertiaryColor = MaterialTheme.colorScheme.tertiary
 
-    Box(modifier.background(primaryContainerColor, MaterialTheme.shapes.extraLarge)) {
+    Box(modifier.background(containerColor, MaterialTheme.shapes.extraLarge)) {
 
         Canvas(
             modifier = Modifier
                 .size(1500.px.dp)
                 .background(
-                    color = secondaryContainerColor,
+                    color = contentColor,
                     shape = RoundedCornerShape(50)
                 )
                 .align(Alignment.BottomCenter)
@@ -105,8 +101,8 @@ fun AnalogClock(
 
             // 中心点
             drawCircle(
-                primaryContainerColor,
-                radius = 60f,
+                containerColor,
+                radius = 100F,
                 center = Offset(centerX, centerY)
             )
         }
@@ -135,13 +131,11 @@ private fun DrawScope.drawHand(
 
 
 @Composable
-@Preview(widthDp = 978, heightDp = 978)
+@Preview(widthDp = 978, heightDp = 978, showBackground = false)
 fun AnalogClockPreview() {
     AppTheme {
-        Surface {
-            Box {
-                AnalogClock(Modifier.fillMaxSize(), DateTimeUiStateSample)
-            }
+        Box {
+//            AnalogClock(Modifier.fillMaxSize(), DateTimeUiStateSample)
         }
     }
 }

@@ -34,8 +34,10 @@ import com.pop.fireflydeskdemo.ui.compose.MainComponent
 import com.pop.fireflydeskdemo.ui.compose.SecondComponent
 import com.pop.fireflydeskdemo.ui.compose.TopBar
 import com.pop.fireflydeskdemo.ui.theme.AppTheme
+import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.vm.DateViewModel
 import com.pop.fireflydeskdemo.vm.DockViewModel
+import com.pop.fireflydeskdemo.vm.MusicViewModel
 import com.pop.fireflydeskdemo.vm.WeatherViewModel
 
 class MainActivity : ComponentActivity() {
@@ -43,6 +45,7 @@ class MainActivity : ComponentActivity() {
     private val dateViewModel by viewModels<DateViewModel>()
     private val weatherViewModel by viewModels<WeatherViewModel>()
 
+    private val musicViewModel by viewModels<MusicViewModel>()
     private val dockViewModel by viewModels<DockViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,8 +68,8 @@ class MainActivity : ComponentActivity() {
                         dateViewModel,
                         weatherViewModel,
                         dockViewModel,
-                        { weatherViewModel.updateWeather() },
-                    )
+                        musicViewModel
+                    ) { weatherViewModel.updateWeather() }
                 }
             }
         }
@@ -91,15 +94,18 @@ fun BasicContainer(
     dateViewModel: DateViewModel,
     weatherViewModel: WeatherViewModel,
     dockViewModel: DockViewModel,
+    musicViewModel: MusicViewModel,
     updateWeather: () -> Unit = {}
 ) {
 
+    val colorScheme = LocalFireFlyColors.current
+
     BoxWithConstraints(
         modifier = modifier
+            .clip(MaterialTheme.shapes.large)
             .background(
-                color = MaterialTheme.colorScheme.background
+                color = colorScheme.lime
             )
-            .clip(MaterialTheme.shapes.large),
     ) {
 
         // maxWidth 和 maxHeight 是父容器的约束
@@ -136,7 +142,8 @@ fun BasicContainer(
             Modifier
                 .padding(start = 50.px.dp, bottom = 300.px.dp)
                 .size(1000.px.dp)
-                .align(Alignment.BottomStart)
+                .align(Alignment.BottomStart),
+            musicViewModel
         )
 
         BottomBar(

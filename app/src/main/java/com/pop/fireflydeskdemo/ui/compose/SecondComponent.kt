@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -34,6 +36,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,12 +45,22 @@ import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
 import com.pop.fireflydeskdemo.ui.theme.AppTheme
+import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
+import com.pop.fireflydeskdemo.R
+import com.pop.fireflydeskdemo.ui.second_component.DriveModeComponent
+import com.pop.fireflydeskdemo.ui.second_component.MusicComponent
+import com.pop.fireflydeskdemo.ui.theme.LocalTextColors
+import com.pop.fireflydeskdemo.vm.MusicViewModel
 
 @Composable
-fun SecondComponent(modifier: Modifier = Modifier) {
+fun SecondComponent(modifier: Modifier = Modifier, musicViewModel: MusicViewModel) {
 
     var scaled by remember { mutableStateOf(false) }
+
+    val fireFlyColors = LocalFireFlyColors.current
+
+    val textColors = LocalTextColors.current
 
     // 动画控制缩放系数
     val scale by animateFloatAsState(
@@ -67,150 +80,20 @@ fun SecondComponent(modifier: Modifier = Modifier) {
                 // 设置缩放锚点为左下角
                 transformOrigin = TransformOrigin(0f, 1f)
             }
-            .clip(RoundedCornerShape(50))
-            .background(MaterialTheme.colorScheme.secondaryContainer),
+            .clip(RoundedCornerShape(50)),
 //            .clickable { scaled = !scaled } // 点击触发缩放
         contentAlignment = Alignment.Center
     ) {
 
-
-        // TODO: 音乐界面，圆形进度条
-        Column(
-            modifier = Modifier
-//                .background(
-//                    Brush.linearGradient(
-//                        colors = listOf(Lime, Grape)
-//                    )
-//                )
-                .fillMaxSize()
-                .padding(100.px.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceAround
+        val pagerState = rememberPagerState { 2 }
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
         ) {
-
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1F),
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                Text(
-                    text = "不眠之夜",
-                    fontSize = 100.px.sp,
-                    fontFamily = Mulish,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    color = Color.White,
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .align(Alignment.CenterHorizontally)
-                )
-
-                Text(
-                    text = "张杰",
-                    fontSize = 60.px.sp,
-                    fontFamily = Mulish,
-                    color = Color.White,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .align(Alignment.CenterHorizontally)
-                )
+            when (it) {
+                0 -> MusicComponent(musicViewModel)
+                1 -> DriveModeComponent()
             }
-
-
-            Row(
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .weight(1F),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                    contentDescription = "",
-                    modifier = Modifier.size(240.px.dp),
-                )
-                Icon(
-                    imageVector = Icons.Rounded.PlayArrow,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                    contentDescription = "",
-                    modifier = Modifier.size(240.px.dp)
-                )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                    contentDescription = "",
-                    modifier = Modifier.size(240.px.dp)
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1F),
-                verticalArrangement = Arrangement.Top
-            ) {
-                Text(
-                    text = "别再沉醉 别再枯萎",
-                    fontSize = 50.px.sp,
-                    fontFamily = Mulish,
-                    color = Color.White,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .alpha(.8F)
-                        .scale(.8F)
-                )
-
-                Text(
-                    text = "继续沉醉 自我迂回",
-                    fontSize = 50.px.sp,
-                    fontFamily = Mulish,
-                    color = Color.White,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .align(Alignment.CenterHorizontally)
-                )
-
-                Text(
-                    text = "最后品味 永恒的滋味",
-                    fontSize = 50.px.sp,
-                    fontFamily = Mulish,
-                    color = Color.White,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .alpha(.8F)
-                        .scale(.8F)
-                )
-            }
-
-
         }
-
-
-    }
-}
-
-
-@Preview(widthDp = 978, heightDp = 978)
-@Composable
-fun SecondComponentPreview() {
-    AppTheme {
-        SecondComponent()
     }
 }
