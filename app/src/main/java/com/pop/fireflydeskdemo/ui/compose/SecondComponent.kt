@@ -2,11 +2,13 @@ package com.pop.fireflydeskdemo.ui.compose
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import com.pop.fireflydeskdemo.ui.ext.InfiniteHorizontalPager
+import com.pop.fireflydeskdemo.ui.ext.rememberInfinitePagerState
 import com.pop.fireflydeskdemo.ui.second_component.DriveModeComponent
 import com.pop.fireflydeskdemo.ui.second_component.MusicComponent
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
@@ -28,7 +32,7 @@ import com.pop.fireflydeskdemo.vm.MusicViewModel
 fun SecondComponent(
     modifier: Modifier = Modifier,
     musicViewModel: MusicViewModel,
-    driveModeViewModel: DriveModeViewModel
+    driveModeViewModel: DriveModeViewModel,
 ) {
 
     var scaled by remember { mutableStateOf(false) }
@@ -60,15 +64,20 @@ fun SecondComponent(
         contentAlignment = Alignment.Center
     ) {
 
-        val pagerState = rememberPagerState { 2 }
-        HorizontalPager(
+        val pagerState = rememberInfinitePagerState()
+        InfiniteHorizontalPager(
+            actualPageCount = 3,
             state = pagerState,
             modifier = Modifier.fillMaxSize()
-        ) {
-            when (it) {
+        ) { actualIndex, virtualIndex ->
+            when (actualIndex) {
                 0 -> MusicComponent(musicViewModel)
-//                1 -> DriveModeComponent()
                 1 -> DriveModeComponent(driveModeViewModel)
+                2 -> Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(fireFlyColors.night, shape = MaterialTheme.shapes.extraLarge)
+                )
             }
         }
     }

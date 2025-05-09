@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,7 +60,7 @@ fun DriveModeComponent(
 
     val actualIndex by remember {
         derivedStateOf {
-            (pagerState.settledPage - initialIndex).floorMod(actualCount)
+            (pagerState.currentPage - initialIndex).floorMod(actualCount)
         }
     }
 
@@ -90,7 +91,7 @@ fun DriveModeComponent(
         modifier = Modifier
             .fillMaxSize()
             .fillMaxSize()
-            .background(fireFlyColors.blueSky)
+            .background(fireFlyColors.blueSky, MaterialTheme.shapes.extraLarge)
     ) {
         Text(
             modifier = Modifier
