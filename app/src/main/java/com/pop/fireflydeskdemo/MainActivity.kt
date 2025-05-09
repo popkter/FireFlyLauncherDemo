@@ -37,17 +37,22 @@ import com.pop.fireflydeskdemo.ui.theme.AppTheme
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.vm.DateViewModel
 import com.pop.fireflydeskdemo.vm.DockViewModel
+import com.pop.fireflydeskdemo.vm.DriveModeViewModel
 import com.pop.fireflydeskdemo.vm.MusicViewModel
+import com.pop.fireflydeskdemo.vm.NaviViewModel
 import com.pop.fireflydeskdemo.vm.WeatherViewModel
 
 class MainActivity : ComponentActivity() {
 
+    private val naviViewModel by viewModels<NaviViewModel>()
     private val dateViewModel by viewModels<DateViewModel>()
     private val weatherViewModel by viewModels<WeatherViewModel>()
-
     private val musicViewModel by viewModels<MusicViewModel>()
+
+    private val driveModeViewModel by viewModels<DriveModeViewModel>()
     private val dockViewModel by viewModels<DockViewModel>()
 
+    @SuppressLint("UnusedBoxWithConstraintsScope")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,13 +68,66 @@ class MainActivity : ComponentActivity() {
                             .background(Color.Black)
                     )
 
-                    BasicContainer(
-                        modifier = Modifier.fillMaxSize(),
-                        dateViewModel,
-                        weatherViewModel,
-                        dockViewModel,
-                        musicViewModel
-                    ) { weatherViewModel.updateWeather() }
+                    val colorScheme = LocalFireFlyColors.current
+
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .clip(MaterialTheme.shapes.large)
+                            .background(
+                                color = colorScheme.lime
+                            )
+                    ) {
+
+                        // maxWidth 和 maxHeight 是父容器的约束
+                        Box(
+                            modifier = Modifier
+                                .then(Modifier.layout { measurable, _ ->
+                                    // 不传入 parentConstraints，表示忽略父限制
+                                    val placeable = measurable.measure(Constraints())
+                                    layout(placeable.width, placeable.height) {
+                                        placeable.place(0, 0)
+                                    }
+                                })
+                                .size(2880.px.dp, 2060.px.dp)
+                        ) {
+
+                            MainComponent(
+                                Modifier.fillMaxSize(),
+                                naviViewModel = naviViewModel,
+                                dateViewModel = dateViewModel,
+                                weatherViewModel = weatherViewModel,
+                            )
+                        }
+
+                        TopBar(
+                            Modifier
+                                .padding(top = 50.px.dp, start = 50.px.dp)
+                                .widthIn(710.px.dp, 1910.px.dp)
+                                .align(Alignment.TopStart),
+                            dateViewModel
+                        )
+
+                        SecondComponent(
+                            Modifier
+                                .padding(start = 50.px.dp, bottom = 300.px.dp)
+                                .size(1000.px.dp)
+                                .align(Alignment.BottomStart),
+                            musicViewModel,
+                            driveModeViewModel
+                        )
+
+                        BottomBar(
+                            Modifier
+                                .padding(start = 50.px.dp, bottom = 50.px.dp)
+                                .align(Alignment.BottomStart)
+                                .clickable {
+                                    driveModeViewModel.randomMode()
+//                                    weatherViewModel.updateWeather()
+                                },
+                            dockViewModel
+                        )
+
+                    }
                 }
             }
         }
@@ -83,106 +141,6 @@ class MainActivity : ComponentActivity() {
         windowInsetsController.apply {
             hide(WindowInsetsCompat.Type.systemBars())
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
-    }
-}
-
-@SuppressLint("UnusedBoxWithConstraintsScope")
-@Composable
-fun BasicContainer(
-    modifier: Modifier = Modifier,
-    dateViewModel: DateViewModel,
-    weatherViewModel: WeatherViewModel,
-    dockViewModel: DockViewModel,
-    musicViewModel: MusicViewModel,
-    updateWeather: () -> Unit = {}
-) {
-
-    val colorScheme = LocalFireFlyColors.current
-
-    BoxWithConstraints(
-        modifier = modifier
-            .clip(MaterialTheme.shapes.large)
-            .background(
-                color = colorScheme.lime
-            )
-    ) {
-
-        // maxWidth 和 maxHeight 是父容器的约束
-        Box(
-            modifier = Modifier
-                .then(Modifier.layout { measurable, _ ->
-                    // 不传入 parentConstraints，表示忽略父限制
-                    val placeable = measurable.measure(Constraints())
-                    layout(placeable.width, placeable.height) {
-                        placeable.place(0, 0)
-                    }
-                })
-                .size(2880.px.dp, 2060.px.dp)
-        ) {
-
-            MainComponent(
-                Modifier.fillMaxSize(),
-                dateViewModel = dateViewModel,
-                weatherViewModel = weatherViewModel,
-            )
-        }
-
-        TopBar(
-            Modifier
-                .padding(top = 50.px.dp, start = 50.px.dp)
-                .widthIn(710.px.dp, 1910.px.dp)
-                .align(Alignment.TopStart),
-            dateViewModel
-        )
-
-
-
-        SecondComponent(
-            Modifier
-                .padding(start = 50.px.dp, bottom = 300.px.dp)
-                .size(1000.px.dp)
-                .align(Alignment.BottomStart),
-            musicViewModel
-        )
-
-        BottomBar(
-            Modifier
-                .padding(start = 50.px.dp, bottom = 50.px.dp)
-                .align(Alignment.BottomStart)
-                .clickable {
-                    updateWeather()
-                },
-            dockViewModel
-        )
-
-
-    }
-}
-
-
-@Preview(
-    showBackground = true, showSystemUi = false
-)
-@Composable
-fun GreetingPreview() {
-    AppTheme {
-        AppTheme {
-            Surface {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black)
-                )
-
-//                BasicContainer(
-//                    modifier = Modifier.fillMaxSize(),
-//                    dateViewModel,
-//                    weatherViewModel,
-//                    dockViewModel,
-//                    { weatherViewModel.updateWeather() },
-//                )
-            }
         }
     }
 }

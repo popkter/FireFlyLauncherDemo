@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pop.fireflydeskdemo.R
+import com.pop.fireflydeskdemo.vm.base.MainComponentController
+import com.pop.fireflydeskdemo.vm.base.MainComponentViewModel
 import com.pop.libnet.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -16,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-class WeatherViewModel : ViewModel() {
+class WeatherViewModel : MainComponentViewModel() {
 
     companion object {
         private const val TAG = "WeatherViewModel"
@@ -34,14 +36,40 @@ class WeatherViewModel : ViewModel() {
         internal const val PARTLY_CLOUDY_DAY = "partly-cloudy-day"
         internal const val PARTLY_CLOUDY_NIGHT = "partly-cloudy-night"
         internal const val CLEAR_DAY = "clear-day"
-        internal const val CLEAR_NIGHT = "clear  -night"
+        internal const val CLEAR_NIGHT = "clear-night"
+
+        private const val TO_PLAY = "to_play"
+        private const val TO_LOCATION = "to_location"
+        private const val TO_WRAN = "to_warn"
+
     }
 
     private val _weatherUiState = MutableStateFlow(WeatherUiStateSample)
 
     val weatherUiState: StateFlow<WeatherUiState> = _weatherUiState.asStateFlow()
 
-    val controller = mutableListOf(R.drawable.to_play, R.drawable.to_location, R.drawable.to_warn)
+    override val controller = listOf(
+        MainComponentController(
+            TO_PLAY,
+            R.drawable.to_play
+        ),
+        MainComponentController(
+            TO_LOCATION,
+            R.drawable.to_location
+        ),
+        MainComponentController(
+            TO_WRAN,
+            R.drawable.to_warn
+        )
+    )
+
+    override fun onControllerClick(controller: MainComponentController) {
+        when (controller.desc) {
+            TO_PLAY -> {}
+            TO_LOCATION -> {}
+            TO_WRAN -> {}
+        }
+    }
 
 
 //    init {

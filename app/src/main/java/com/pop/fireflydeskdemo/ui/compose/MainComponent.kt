@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,45 +39,40 @@ import com.pop.fireflydeskdemo.R
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
+import com.pop.fireflydeskdemo.ui.ext.InfiniteHorizontalPager
+import com.pop.fireflydeskdemo.ui.ext.rememberInfinitePagerState
 import com.pop.fireflydeskdemo.ui.main_component.AnalogClock
 import com.pop.fireflydeskdemo.ui.main_component.RealTimeWeather
+import com.pop.fireflydeskdemo.ui.main_component.getWeatherBackgroundColor
+import com.pop.fireflydeskdemo.ui.main_component.getWeatherContentColor
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
-import com.pop.fireflydeskdemo.ui.theme.LocalWeatherColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.vm.DateViewModel
+import com.pop.fireflydeskdemo.vm.NaviViewModel
 import com.pop.fireflydeskdemo.vm.WeatherViewModel
-import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.CLEAR_DAY
-import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.CLEAR_NIGHT
-import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.CLOUDY
-import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.FOG
-import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.PARTLY_CLOUDY_DAY
-import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.PARTLY_CLOUDY_NIGHT
-import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.RAIN
-import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.SNOW
-import com.pop.fireflydeskdemo.vm.WeatherViewModel.Companion.WIND
 import kotlin.math.abs
 
 private const val TAG = "MainComponent"
 
 @Composable
 fun MainComponent(
-    modifier: Modifier = Modifier, dateViewModel: DateViewModel, weatherViewModel: WeatherViewModel
+    modifier: Modifier = Modifier,
+    naviViewModel: NaviViewModel,
+    dateViewModel: DateViewModel,
+    weatherViewModel: WeatherViewModel
 ) {
+
+    val viewModels = listOf(naviViewModel, dateViewModel, weatherViewModel)
 
     val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsStateWithLifecycle()
 
     val weatherUiState by weatherViewModel.weatherUiState.collectAsStateWithLifecycle()
 
-    val naviController =
-        listOf(R.drawable.to_home, R.drawable.to_work, R.drawable.to_favorite, R.drawable.to_search)
-
-    val virtualCount = Int.MAX_VALUE
-
     val actualCount = 4
-    //初始图片下标
-    val initialIndex = virtualCount / 2
 
-    val pagerState = rememberPagerState(initialPage = initialIndex) { virtualCount }
+    val initialIndex = Int.MAX_VALUE / 2
+
+    val pagerState = rememberInfinitePagerState(initialIndex)
 
     val actualPageIndex by remember {
         derivedStateOf {
@@ -88,94 +80,88 @@ fun MainComponent(
         }
     }
 
-    val controllerMap = remember {
-        mapOf(
-            0 to naviController, 1 to dateViewModel.controller, 2 to weatherViewModel.controller
-        )
-    }
-
-    val controller by remember(actualPageIndex) {
-        derivedStateOf {
-            controllerMap[actualPageIndex] ?: emptyList()
-        }
-    }
-
     val fireFlyColors = LocalFireFlyColors.current
-    val weatherColors = LocalWeatherColors.current
 
     Log.e(TAG, "MainComponent actualPageIndex: $actualPageIndex")
 
     val transition = updateTransition(targetState = actualPageIndex, label = "PageTransition")
 
-    val primaryColor by transition.animateColor(label = "BackgroundColor") { page ->
-        when (page) {
-            0 -> fireFlyColors.rose
-            1 -> fireFlyColors.lime
-            2 -> {
-                when (weatherUiState.key) {
-                    SNOW -> weatherColors.snowyWhite
-                    RAIN -> weatherColors.rainyBlue
-                    FOG -> weatherColors.foggyBlueGray
-                    WIND -> weatherColors.windyGray
-                    CLOUDY -> weatherColors.cloudyGray
-
-                    PARTLY_CLOUDY_DAY, PARTLY_CLOUDY_NIGHT -> weatherColors.partlyCloudyWhite
-
-                    CLEAR_DAY, CLEAR_NIGHT -> weatherColors.clearGold
-
-                    else -> weatherColors.cloudyGray
-                }
-            }
-
-            else -> fireFlyColors.rose
-        }
-
+    val controllerBackgroundColor by transition.animateColor(label = "BackgroundColor") { page ->
+        getControllerBackgroundColor(page, weatherUiState.key)
     }
 
-    val secondaryColor by transition.animateColor(label = "ContentColor") { page ->
-        when (page) {
-            0 -> fireFlyColors.light
-            1 -> fireFlyColors.blueSky
-            2 -> {
-                when (weatherUiState.key) {
-                    SNOW -> fireFlyColors.blueSky
-                    RAIN -> fireFlyColors.light
-                    FOG -> fireFlyColors.darkLoam
-                    WIND -> fireFlyColors.light
-                    CLOUDY -> fireFlyColors.light
+    val controllerContentColor by transition.animateColor(label = "ContentColor") { page ->
+        getControllerContentColor(page, weatherUiState.key)
+    }
 
-                    PARTLY_CLOUDY_DAY, PARTLY_CLOUDY_NIGHT -> fireFlyColors.blueSky
-
-                    CLEAR_DAY, CLEAR_NIGHT -> fireFlyColors.light
-
-                    else -> fireFlyColors.light
+    val mainComponents = remember {
+        listOf<@Composable () -> Unit>(
+            {
+                Image(
+                    painter = painterResource(id = R.drawable.map_capture),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(50)),
+                    contentScale = ContentScale.FillWidth
+                )
+            },
+            {
+                AnalogClock(
+                    Modifier.fillMaxSize(),
+                    dateTimeUiState,
+                    fireFlyColors.blueSky,
+                    fireFlyColors.blueSea,
+                    fireFlyColors.orange,
+                    fireFlyColors.lime,
+                    fireFlyColors.night
+                )
+            },
+            {
+                RealTimeWeather(
+                    Modifier.fillMaxSize(),
+                    weatherUiState
+                )
+            },
+            {
+                // page 3 示例
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("空白页", color = Color.White)
                 }
             }
+        )
+    }
 
-            else -> fireFlyColors.light
+    val controller by remember {
+        derivedStateOf {
+            viewModels.getOrNull(actualPageIndex)?.controller ?: emptyList()
         }
     }
 
     Box(
         modifier = modifier
-            .clip(MaterialTheme.shapes.large)
-            .clipToBounds()
     ) {
-
-        HorizontalPager(
+        //Display
+        InfiniteHorizontalPager(
             state = pagerState,
-        ) { index ->
+            actualPageCount = 4,
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.large)
+                .clipToBounds()
+        ) { actualIndex, virtualIndex ->
 
             // 计算当前页面与目标页面的偏移量（-1 ~ 1）
             val pageOffset =
-                ((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction).coerceIn(
+                ((pagerState.currentPage - virtualIndex) + pagerState.currentPageOffsetFraction).coerceIn(
                     -1f, 1f
                 )
 
             // 缩放因子，越靠近当前页 scale 越大
             val scale = 0.6f + (1 - abs(pageOffset)) * 0.4f
 
-            val actualIndex = (index - initialIndex).floorMod(actualCount)
 
             Box(
                 modifier = Modifier
@@ -187,81 +173,24 @@ fun MainComponent(
                         alpha = scale
                     }, contentAlignment = Alignment.TopEnd
             ) {
-
-                key(actualIndex) {
-                    when (actualIndex) {
-                        0 -> {
-                            Image(
-                                painter = painterResource(id = R.drawable.map_capture),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(RoundedCornerShape(50)),
-                                contentScale = ContentScale.FillWidth
-                            )
-                        }
-
-                        1 -> {
-                            AnalogClock(
-                                Modifier.fillMaxSize(),
-                                dateTimeUiState,
-                                fireFlyColors.blueSky,
-                                fireFlyColors.blueSea,
-                                fireFlyColors.orange,
-                                fireFlyColors.lime,
-                                fireFlyColors.night
-                            )
-                        }
-
-                        2 -> {
-                            RealTimeWeather(
-                                Modifier.fillMaxSize(),
-                                weatherUiState,
-                                fireFlyColors.grape,
-                                primaryColor,
-                                secondaryColor
-                            )
-                        }
-                    }
-                }
-
+                mainComponents[actualIndex]()
             }
-
-
         }
 
-        // TODO: 根据当前显示的场景修改QcPanel的颜色
+        //Controller
         Row(
             modifier = Modifier
                 .padding(top = 180.px.dp, end = 50.px.dp)
                 .background(
-                    color = primaryColor, shape = MaterialTheme.shapes.large
+                    color = controllerBackgroundColor, shape = MaterialTheme.shapes.large
                 )
                 .align(Alignment.TopEnd)
                 .padding(horizontal = 50.px.dp)
                 .animateContentSize(),
             horizontalArrangement = Arrangement.End
         ) {
-            if (controller.isNotEmpty()) {
-                LazyRow(
-                    modifier = Modifier.height(200.px.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(80.px.dp),
-                ) {
-                    items(controller, key = { it }) { icon ->
-                        Icon(
-                            painter = painterResource(icon),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(120.px.dp)
-                                .clickable {
 
-                                },
-                            tint = if (icon == R.drawable.to_warn) Color.Red else secondaryColor
-                        )
-                    }
-                }
-            } else {
+            if (controller.isEmpty()) {
                 Box(
                     modifier = Modifier.height(200.px.dp), contentAlignment = Alignment.Center
                 ) {
@@ -274,8 +203,50 @@ fun MainComponent(
 
                     )
                 }
+            } else {
+                LazyRow(
+                    modifier = Modifier.height(200.px.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(80.px.dp),
+                ) {
+                    items(controller, key = { it }) { (desc, iconRes) ->
+                        Icon(
+                            painter = painterResource(iconRes),
+                            contentDescription = desc,
+                            modifier = Modifier
+                                .size(120.px.dp)
+                                .clickable {
+
+                                },
+                            tint = if (iconRes == R.drawable.to_warn) Color.Red else controllerContentColor
+                        )
+                    }
+                }
             }
         }
+    }
+}
+
+
+@Composable
+fun getControllerBackgroundColor(actualIndex: Int, weatherKey: String = ""): Color {
+    val fireFlyColors = LocalFireFlyColors.current
+    return when (actualIndex) {
+        0 -> fireFlyColors.rose
+        1 -> fireFlyColors.lime
+        2 -> getWeatherContentColor(weatherKey)
+        else -> fireFlyColors.rose
+    }
+}
+
+@Composable
+fun getControllerContentColor(actualIndex: Int, weatherKey: String = ""): Color {
+    val fireFlyColors = LocalFireFlyColors.current
+    return when (actualIndex) {
+        0 -> fireFlyColors.light
+        1 -> fireFlyColors.night
+        2 -> getWeatherBackgroundColor(weatherKey)
+        else -> fireFlyColors.light
     }
 }
 

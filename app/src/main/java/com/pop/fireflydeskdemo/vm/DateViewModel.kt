@@ -3,6 +3,8 @@ package com.pop.fireflydeskdemo.vm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pop.fireflydeskdemo.R
+import com.pop.fireflydeskdemo.vm.base.MainComponentController
+import com.pop.fireflydeskdemo.vm.base.MainComponentViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,18 +15,47 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-class DateViewModel : ViewModel() {
+class DateViewModel : MainComponentViewModel() {
 
     companion object {
         internal const val DATE_TIME = "date_time"
+
+        private const val TO_ALARM = "to_alarm"
+        private const val TO_NOTE = "to_note"
+        private const val TO_RELAX = "to_relax"
+        private const val TO_MUTE = "to_mute"
     }
 
     private val _dateTimeUiState = MutableStateFlow(currentTimeUiState())
     val dateTimeUiState: StateFlow<DateTimeUiState> = _dateTimeUiState.asStateFlow()
 
-    val controller = mutableListOf(
-        R.drawable.to_alarm, R.drawable.to_note, R.drawable.to_relax, R.drawable.to_mute
+    override val controller = listOf(
+        MainComponentController(
+            TO_ALARM,
+            R.drawable.to_alarm
+        ),
+        MainComponentController(
+            TO_NOTE,
+            R.drawable.to_note
+        ),
+        MainComponentController(
+            TO_RELAX,
+            R.drawable.to_relax
+        ),
+        MainComponentController(
+            TO_MUTE,
+            R.drawable.to_mute
+        )
     )
+
+    override fun onControllerClick(controller: MainComponentController) {
+        when (controller.desc) {
+            TO_ALARM -> {}
+            TO_NOTE -> {}
+            TO_RELAX -> {}
+            TO_MUTE -> {}
+        }
+    }
 
     init {
         viewModelScope.launch {
