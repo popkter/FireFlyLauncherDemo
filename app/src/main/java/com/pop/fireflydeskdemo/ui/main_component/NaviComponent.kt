@@ -1,8 +1,29 @@
-package com.pop.fireflydeskdemo.vm
+package com.pop.fireflydeskdemo.ui.main_component
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import com.pop.fireflydeskdemo.R
 import com.pop.fireflydeskdemo.vm.base.MainComponentController
 import com.pop.fireflydeskdemo.vm.base.MainComponentViewModel
+
+@Composable
+fun NaviComponent(modifier: Modifier = Modifier) {
+
+    Image(
+        painter = painterResource(id = R.drawable.map_capture),
+        contentDescription = "",
+        modifier = modifier
+            .clip(RoundedCornerShape(50)),
+        contentScale = ContentScale.FillWidth
+    )
+}
+
 
 class NaviViewModel : MainComponentViewModel() {
 

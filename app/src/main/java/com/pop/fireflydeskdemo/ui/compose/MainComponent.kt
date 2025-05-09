@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,14 +39,17 @@ import com.pop.fireflydeskdemo.ext.sp
 import com.pop.fireflydeskdemo.ui.ext.InfiniteHorizontalPager
 import com.pop.fireflydeskdemo.ui.ext.rememberInfinitePagerState
 import com.pop.fireflydeskdemo.ui.main_component.AnalogClock
+import com.pop.fireflydeskdemo.ui.main_component.DateViewModel
+import com.pop.fireflydeskdemo.ui.main_component.MemoComponent
+import com.pop.fireflydeskdemo.ui.main_component.MemoViewModel
+import com.pop.fireflydeskdemo.ui.main_component.NaviComponent
+import com.pop.fireflydeskdemo.ui.main_component.NaviViewModel
 import com.pop.fireflydeskdemo.ui.main_component.RealTimeWeather
+import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel
 import com.pop.fireflydeskdemo.ui.main_component.getWeatherBackgroundColor
 import com.pop.fireflydeskdemo.ui.main_component.getWeatherContentColor
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
-import com.pop.fireflydeskdemo.vm.DateViewModel
-import com.pop.fireflydeskdemo.vm.NaviViewModel
-import com.pop.fireflydeskdemo.vm.WeatherViewModel
 import kotlin.math.abs
 
 private const val TAG = "MainComponent"
@@ -59,14 +59,17 @@ fun MainComponent(
     modifier: Modifier = Modifier,
     naviViewModel: NaviViewModel,
     dateViewModel: DateViewModel,
-    weatherViewModel: WeatherViewModel
+    weatherViewModel: WeatherViewModel,
+    memoViewModel: MemoViewModel,
 ) {
 
-    val viewModels = listOf(naviViewModel, dateViewModel, weatherViewModel)
+    val viewModels = listOf(naviViewModel, dateViewModel, weatherViewModel, memoViewModel)
 
     val dateTimeUiState by dateViewModel.dateTimeUiState.collectAsStateWithLifecycle()
 
     val weatherUiState by weatherViewModel.weatherUiState.collectAsStateWithLifecycle()
+
+    val memoUiState by memoViewModel.memoUiState.collectAsStateWithLifecycle()
 
     val actualCount = 4
 
@@ -97,13 +100,8 @@ fun MainComponent(
     val mainComponents = remember {
         listOf<@Composable () -> Unit>(
             {
-                Image(
-                    painter = painterResource(id = R.drawable.map_capture),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(50)),
-                    contentScale = ContentScale.FillWidth
+                NaviComponent(
+                    Modifier.fillMaxSize()
                 )
             },
             {
@@ -124,13 +122,13 @@ fun MainComponent(
                 )
             },
             {
-                // page 3 示例
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("空白页", color = Color.White)
-                }
+                MemoComponent(
+                    Modifier.fillMaxSize(),
+//                    memoUiState
+                )
+            },
+            {
+
             }
         )
     }

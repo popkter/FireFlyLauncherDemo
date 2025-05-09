@@ -34,7 +34,7 @@ import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.ui.theme.LocalTextColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.ui.theme.TiltWrap
-import com.pop.fireflydeskdemo.vm.DateViewModel
+import com.pop.fireflydeskdemo.ui.main_component.DateViewModel
 
 @Composable
 fun TopBar(

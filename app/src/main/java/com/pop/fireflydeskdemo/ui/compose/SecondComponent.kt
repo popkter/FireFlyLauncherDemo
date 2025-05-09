@@ -22,10 +22,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import com.pop.fireflydeskdemo.ui.ext.InfiniteHorizontalPager
 import com.pop.fireflydeskdemo.ui.ext.rememberInfinitePagerState
 import com.pop.fireflydeskdemo.ui.second_component.DriveModeComponent
+import com.pop.fireflydeskdemo.ui.second_component.DriveModeViewModel
 import com.pop.fireflydeskdemo.ui.second_component.MusicComponent
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.ui.theme.LocalTextColors
-import com.pop.fireflydeskdemo.vm.DriveModeViewModel
 import com.pop.fireflydeskdemo.vm.MusicViewModel
 
 @Composable

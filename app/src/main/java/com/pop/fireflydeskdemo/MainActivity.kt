@@ -16,13 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -30,25 +28,25 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ui.compose.BottomBar
+import com.pop.fireflydeskdemo.ui.compose.DockViewModel
 import com.pop.fireflydeskdemo.ui.compose.MainComponent
 import com.pop.fireflydeskdemo.ui.compose.SecondComponent
 import com.pop.fireflydeskdemo.ui.compose.TopBar
+import com.pop.fireflydeskdemo.ui.main_component.DateViewModel
+import com.pop.fireflydeskdemo.ui.main_component.MemoViewModel
+import com.pop.fireflydeskdemo.ui.main_component.NaviViewModel
+import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel
+import com.pop.fireflydeskdemo.ui.second_component.DriveModeViewModel
 import com.pop.fireflydeskdemo.ui.theme.AppTheme
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
-import com.pop.fireflydeskdemo.vm.DateViewModel
-import com.pop.fireflydeskdemo.vm.DockViewModel
-import com.pop.fireflydeskdemo.vm.DriveModeViewModel
 import com.pop.fireflydeskdemo.vm.MusicViewModel
-import com.pop.fireflydeskdemo.vm.NaviViewModel
-import com.pop.fireflydeskdemo.vm.WeatherViewModel
 
 class MainActivity : ComponentActivity() {
-
     private val naviViewModel by viewModels<NaviViewModel>()
     private val dateViewModel by viewModels<DateViewModel>()
     private val weatherViewModel by viewModels<WeatherViewModel>()
+    private val memoViewModel by viewModels<MemoViewModel>()
     private val musicViewModel by viewModels<MusicViewModel>()
-
     private val driveModeViewModel by viewModels<DriveModeViewModel>()
     private val dockViewModel by viewModels<DockViewModel>()
 
@@ -96,6 +94,7 @@ class MainActivity : ComponentActivity() {
                                 naviViewModel = naviViewModel,
                                 dateViewModel = dateViewModel,
                                 weatherViewModel = weatherViewModel,
+                                memoViewModel = memoViewModel
                             )
                         }
 

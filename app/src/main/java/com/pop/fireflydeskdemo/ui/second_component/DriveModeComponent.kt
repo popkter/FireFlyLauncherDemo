@@ -1,5 +1,7 @@
 package com.pop.fireflydeskdemo.ui.second_component
 
+import android.os.Parcelable
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Box
@@ -20,22 +22,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.pop.fireflydeskdemo.R
+import com.pop.fireflydeskdemo.ext.distanceBetween
 import com.pop.fireflydeskdemo.ext.dp
+import com.pop.fireflydeskdemo.ext.launchOnIO
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
 import com.pop.fireflydeskdemo.ui.compose.floorMod
 import com.pop.fireflydeskdemo.ui.ext.InfiniteHorizontalPager
 import com.pop.fireflydeskdemo.ui.ext.rememberInfinitePagerState
+import com.pop.fireflydeskdemo.ui.second_component.DriveModeViewModel.Companion.MODE_COMFORT
+import com.pop.fireflydeskdemo.ui.second_component.DriveModeViewModel.Companion.MODE_ECO
+import com.pop.fireflydeskdemo.ui.second_component.DriveModeViewModel.Companion.MODE_SPORT
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.ui.theme.LocalTextColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
-import com.pop.fireflydeskdemo.vm.DriveModeViewModel
-import com.pop.fireflydeskdemo.vm.getDriveModeIconColor
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.parcelize.Parcelize
 import kotlin.math.abs
 
 
@@ -101,7 +112,7 @@ fun DriveModeComponent(
             text = currentMode.desc,
             fontFamily = Mulish,
             fontSize = 120.px.sp,
-            color = textColors.light,
+            color = currentMode.getDriveModeIconColor(),
         )
 
         InfiniteHorizontalPager(
@@ -145,15 +156,60 @@ fun DriveModeComponent(
     }
 }
 
-fun <T> List<T>.distanceBetween(value1: T, value2: T): Int {
-    val index1 = indexOf(value1)
-    val index2 = indexOf(value2)
 
-    return if (index1 != -1 && index2 != -1) {
-        index2 - index1
-    } else {
-        0 // 有一个元素没找到
+class DriveModeViewModel : ViewModel() {
+
+    companion object {
+        private const val TAG = "DriveModeViewModel"
+        internal const val MODE_SPORT = "运动"
+        internal const val MODE_ECO = "节能"
+        internal const val MODE_COMFORT = "舒适"
+        private val sportMode = DriveModeController(MODE_ECO, R.drawable.icon_mode_eco)
+        private val ecoMode = DriveModeController(MODE_SPORT, R.drawable.icon_mode_sport)
+        private val comfortMode = DriveModeController(MODE_COMFORT, R.drawable.icon_mode_comfortable)
+    }
+
+    private val controller = mutableListOf(sportMode, ecoMode, comfortMode,)
+
+    private val _onModeChanged = MutableStateFlow(sportMode)
+    val onModeChanged = _onModeChanged.asStateFlow()
+
+    fun updateMode(controller: DriveModeController) {
+        launchOnIO {
+            Log.e(TAG, "updateMode: $controller")
+            // TODO: 向下更新状态
+        }
+    }
+
+    fun randomMode() {
+        launchOnIO {
+            _onModeChanged.value = controller.random()
+        }
+    }
+
+    private val _modeList = MutableStateFlow(controller)
+
+    val modeList = _modeList.asStateFlow()
+
+}
+
+
+@Composable
+fun DriveModeController.getDriveModeIconColor(): Color {
+    val fireFlyColors = LocalFireFlyColors.current
+    return when (desc) {
+        MODE_SPORT -> fireFlyColors.orange
+        MODE_ECO -> fireFlyColors.lime
+        MODE_COMFORT -> fireFlyColors.blueSea
+        else -> fireFlyColors.light
     }
 }
 
 
+
+
+@Parcelize
+data class DriveModeController(
+    val desc: String,
+    val iconRes: Int,
+) : Parcelable
