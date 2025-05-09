@@ -58,7 +58,7 @@ fun MusicComponent(
                 fontFamily = Mulish,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
-                color = textColors.light,
+                color = textColors.onGray,
                 modifier = Modifier
                     .wrapContentWidth()
                     .align(Alignment.CenterHorizontally)
@@ -68,9 +68,9 @@ fun MusicComponent(
                 text = "张杰",
                 fontSize = 60.px.sp,
                 fontFamily = Mulish,
-                color = textColors.light,
+                color = textColors.onGray,
                 fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Thin,
+                fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .wrapContentWidth()

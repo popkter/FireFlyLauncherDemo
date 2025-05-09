@@ -120,8 +120,8 @@ class MainActivity : ComponentActivity() {
                                 .padding(start = 50.px.dp, bottom = 50.px.dp)
                                 .align(Alignment.BottomStart)
                                 .clickable {
-                                    driveModeViewModel.randomMode()
-//                                    weatherViewModel.updateWeather()
+//                                    driveModeViewModel.randomMode()
+                                    weatherViewModel.updateWeather()
                                 },
                             dockViewModel
                         )
