@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.android.hilt)
+    alias(libs.plugins.ksp)
     id("kotlin-parcelize")
 }
 
@@ -63,6 +65,14 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
 
     implementation(libs.kotlin.reflect)
+
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+
+// Compose Hilt Navigation
+    implementation(libs.androidx.hilt.navigation.compose)
 
 
     implementation(project(":libnet"))

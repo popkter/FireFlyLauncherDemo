@@ -45,8 +45,10 @@ import com.pop.fireflydeskdemo.ui.theme.LocalTextColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.vm.base.MainComponentController
 import com.pop.fireflydeskdemo.vm.base.MainComponentViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -104,7 +106,10 @@ fun MemoComponent(
 
                 val itemInfo = layoutInfo.visibleItemsInfo.find { it.index == index }
 
-                Log.e(TAG, "MemoComponent itemInfo: $itemInfo startOffset: ${layoutInfo.viewportStartOffset} endOffset: ${layoutInfo.viewportEndOffset}")
+                Log.e(
+                    TAG,
+                    "MemoComponent itemInfo: $itemInfo startOffset: ${layoutInfo.viewportStartOffset} endOffset: ${layoutInfo.viewportEndOffset}"
+                )
                 val center = layoutInfo.viewportStartOffset + layoutInfo.viewportEndOffset / 2
 
                 Log.e(TAG, "MemoComponent center: $center")
@@ -297,7 +302,8 @@ val memoDataItemSample = listOf(
 )
 
 
-class MemoViewModel : MainComponentViewModel() {
+@HiltViewModel
+class MemoViewModel @Inject constructor() : MainComponentViewModel() {
 
     companion object {
         private const val TO_TODAY = "to_today"

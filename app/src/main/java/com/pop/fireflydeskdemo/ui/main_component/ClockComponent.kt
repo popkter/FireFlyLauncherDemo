@@ -22,6 +22,7 @@ import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ui.theme.AppTheme
 import com.pop.fireflydeskdemo.vm.base.MainComponentController
 import com.pop.fireflydeskdemo.vm.base.MainComponentViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +32,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
+import javax.inject.Inject
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -153,7 +155,8 @@ fun AnalogClockPreview() {
 }
 
 
-class DateViewModel : MainComponentViewModel() {
+@HiltViewModel
+class DateViewModel @Inject constructor() : MainComponentViewModel() {
 
     companion object {
         internal const val DATE_TIME = "date_time"

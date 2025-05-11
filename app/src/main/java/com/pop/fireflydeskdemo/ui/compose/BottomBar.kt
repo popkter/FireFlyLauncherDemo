@@ -27,9 +27,11 @@ import com.pop.fireflydeskdemo.R
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @Composable
 fun BottomBar(modifier: Modifier = Modifier, dockViewModel: DockViewModel) {
@@ -79,7 +81,8 @@ fun BottomBar(modifier: Modifier = Modifier, dockViewModel: DockViewModel) {
     }
 }
 
-class DockViewModel : ViewModel() {
+@HiltViewModel
+class DockViewModel @Inject constructor() : ViewModel() {
 
     companion object {
 

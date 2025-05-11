@@ -43,14 +43,17 @@ import com.pop.fireflydeskdemo.ui.second_component.DriveModeViewModel.Companion.
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.ui.theme.LocalTextColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 import kotlin.math.abs
 
 
 private const val TAG = "DriveModeComponent"
+
 @Composable
 fun DriveModeComponent(
     driveModeViewModel: DriveModeViewModel,
@@ -86,7 +89,7 @@ fun DriveModeComponent(
 
     LaunchedEffect(Unit) {
         snapshotFlow { onModeChanged }.collectLatest {
-            val offset = modeList.distanceBetween(currentMode,it)
+            val offset = modeList.distanceBetween(currentMode, it)
             pagerState.animateScrollToPage(actualIndex + offset)
         }
     }
@@ -156,8 +159,8 @@ fun DriveModeComponent(
     }
 }
 
-
-class DriveModeViewModel : ViewModel() {
+@HiltViewModel
+class DriveModeViewModel @Inject constructor() : ViewModel() {
 
     companion object {
         private const val TAG = "DriveModeViewModel"
@@ -166,10 +169,11 @@ class DriveModeViewModel : ViewModel() {
         internal const val MODE_COMFORT = "舒适"
         private val sportMode = DriveModeController(MODE_ECO, R.drawable.icon_mode_eco)
         private val ecoMode = DriveModeController(MODE_SPORT, R.drawable.icon_mode_sport)
-        private val comfortMode = DriveModeController(MODE_COMFORT, R.drawable.icon_mode_comfortable)
+        private val comfortMode =
+            DriveModeController(MODE_COMFORT, R.drawable.icon_mode_comfortable)
     }
 
-    private val controller = mutableListOf(sportMode, ecoMode, comfortMode,)
+    private val controller = mutableListOf(sportMode, ecoMode, comfortMode)
 
     private val _onModeChanged = MutableStateFlow(sportMode)
     val onModeChanged = _onModeChanged.asStateFlow()
@@ -204,8 +208,6 @@ fun DriveModeController.getDriveModeIconColor(): Color {
         else -> fireFlyColors.light
     }
 }
-
-
 
 
 @Parcelize

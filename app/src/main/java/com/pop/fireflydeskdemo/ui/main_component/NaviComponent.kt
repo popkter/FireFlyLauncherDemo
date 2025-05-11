@@ -11,6 +11,8 @@ import androidx.compose.ui.res.painterResource
 import com.pop.fireflydeskdemo.R
 import com.pop.fireflydeskdemo.vm.base.MainComponentController
 import com.pop.fireflydeskdemo.vm.base.MainComponentViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 @Composable
 fun NaviComponent(modifier: Modifier = Modifier) {
@@ -24,8 +26,8 @@ fun NaviComponent(modifier: Modifier = Modifier) {
     )
 }
 
-
-class NaviViewModel : MainComponentViewModel() {
+@HiltViewModel
+class NaviViewModel @Inject constructor() : MainComponentViewModel() {
 
     companion object {
         private const val TO_HOME = "to_home"

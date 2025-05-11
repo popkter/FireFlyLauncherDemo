@@ -44,6 +44,7 @@ import com.pop.fireflydeskdemo.ui.theme.Mulish
 import com.pop.fireflydeskdemo.vm.base.MainComponentController
 import com.pop.fireflydeskdemo.vm.base.MainComponentViewModel
 import com.pop.libnet.HttpClient
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
@@ -54,6 +55,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 @Composable
 fun RealTimeWeather(
@@ -199,7 +201,8 @@ fun RealTimeWeatherPreview() {
 }
 
 
-class WeatherViewModel : MainComponentViewModel() {
+@HiltViewModel
+class WeatherViewModel @Inject constructor() : MainComponentViewModel() {
 
     companion object {
         private const val TAG = "WeatherViewModel"
