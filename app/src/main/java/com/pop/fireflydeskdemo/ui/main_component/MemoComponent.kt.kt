@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,6 +37,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.dp
 import com.pop.fireflydeskdemo.R
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.launchOnIO
@@ -48,6 +52,7 @@ import com.pop.fireflydeskdemo.vm.base.MainComponentViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.min
@@ -63,21 +68,24 @@ fun MemoComponent(
 ) {
 
     val list =
-        Array(2) { MemoDataItem() }.toList() + memoUiState + Array(2) { MemoDataItem() }.toList()
+        Array(1) { MemoDataItem() }.toList() + memoUiState + Array(3) { MemoDataItem() }.toList()
 
     val fireFlyColors = LocalFireFlyColors.current
     val textColors = LocalTextColors.current
 
-    val pagerState = rememberPagerState { list.size }
+    val scope = rememberCoroutineScope()
 
     val listState = rememberLazyListState()
+
+    val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+
 
     val layoutInfo by remember { derivedStateOf { listState.layoutInfo } }
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo }
             .collect { visibleItems ->
-                Log.e(TAG, "当前可见项: ${visibleItems.map { it.index }}")
+//                Log.e(TAG, "当前可见项: ${visibleItems.map { it.index }}")
             }
     }
 
@@ -90,6 +98,7 @@ fun MemoComponent(
 
         LazyColumn(
             state = listState,
+            flingBehavior = flingBehavior,
             modifier = Modifier
                 .then(Modifier.layout { measurable, _ ->
                     val placeable = measurable.measure(Constraints())
@@ -100,25 +109,24 @@ fun MemoComponent(
                 .offset(x = -40.px.dp)
                 .size(2200.px.dp, 1460.px.dp)
                 .align(Alignment.BottomStart),
-            verticalArrangement = Arrangement.spacedBy(40.px.dp)
+            verticalArrangement = Arrangement.spacedBy(40.px.dp),
+            contentPadding = PaddingValues(bottom = 80.px.dp)
         ) {
             itemsIndexed(list) { index, item ->
 
                 val itemInfo = layoutInfo.visibleItemsInfo.find { it.index == index }
 
-                Log.e(
-                    TAG,
-                    "MemoComponent itemInfo: $itemInfo startOffset: ${layoutInfo.viewportStartOffset} endOffset: ${layoutInfo.viewportEndOffset}"
-                )
-                val center = layoutInfo.viewportStartOffset + layoutInfo.viewportEndOffset / 2
+//                Log.e(TAG, "MemoComponent index: $index itemInfo offset: ${itemInfo?.offset} itemInfo size: ${itemInfo?.size} startOffset: ${layoutInfo.viewportStartOffset} endOffset: ${layoutInfo.viewportEndOffset}")
 
-                Log.e(TAG, "MemoComponent center: $center")
+                val center = 400
 
                 val itemCenter = itemInfo?.let {
-                    (it.offset + it.offset + it.size) / 2
+                    it.offset + it.size / 2
                 } ?: 0
 
-                val distanceFromCenter = abs(n = center - itemCenter).toFloat()
+//                Log.e(TAG, "MemoComponent center: $center itemCenter: $itemCenter ")
+
+                val distanceFromCenter = abs(center - itemCenter).toFloat()
 
                 val norm = min(1f, distanceFromCenter / 200f) // normalize distance
                 val scale = 1f - 0.1f * norm
@@ -127,6 +135,11 @@ fun MemoComponent(
                 if (list[index].content.isNotEmpty()) {
                     Box(
                         modifier = Modifier
+                            .clickable {
+                                scope.launch {
+                                    listState.animateScrollToItem(index, -280)
+                                }
+                            }
                             .graphicsLayer {
                                 scaleX = scale
                                 scaleY = scale
@@ -144,94 +157,24 @@ fun MemoComponent(
                             fontSize = 60.px.sp,
                             fontFamily = Mulish,
                         )
-
                     }
                 } else {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(240.px.dp)
+//                            .background(fireFlyColors.grape)
                     ) {}
                 }
             }
         }
 
-        /*        VerticalPager(
-                    pagerState,
-                    modifier = Modifier
-                        .then(Modifier.layout { measurable, _ ->
-                            val placeable = measurable.measure(Constraints())
-                            layout(placeable.width, placeable.height) {
-                                placeable.place(0, 0)
-                            }
-                        })
-                        .offset(x = -40.px.dp)
-                        .size(2200.px.dp, 1460.px.dp)
-                        .align(Alignment.BottomStart),
-                    pageSize = object : PageSize {
-                        override fun Density.calculateMainAxisPageSize(
-                            availableSpace: Int, pageSpacing: Int,
-                        ): Int = (availableSpace - 2 * pageSpacing) / 5
-                    },
-                    snapPosition = SnapPosition.Center
-                ) { index ->
-
-                    val pageOffset =
-                        ((pagerState.currentPage - index - 1) + pagerState.currentPageOffsetFraction).coerceIn(
-                            -1f, 1f
-                        )
-
-                    // 缩放因子，越靠近当前页 scale 越大
-                    val scale = 0.9f + (1 - abs(pageOffset)) * 0.1f
-                    val alpha = 0.7f + (1 - abs(pageOffset)) * 0.3f
-
-
-                    if (list[index].content.isNotEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
-                                    this.alpha = alpha
-                                }
-                                .fillMaxWidth()
-                                .height(240.px.dp)
-                                .background(colors.blueSky)
-                                .padding(start = 200.px.dp)
-                                .clickable {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(index)
-                                    }
-                                },
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            Text(
-                                text = "$index ${list[index].content}",
-                                color = colors.night,
-                                fontSize = 60.px.sp,
-                                fontFamily = Mulish,
-                            )
-
-                        }
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
-                                    this.alpha = alpha
-                                }
-                                .fillMaxWidth()
-                                .height(240.px.dp)
-                        ) {}
-                    }
-
-                }*/
-
-        Canvas(Modifier.size(2060.px.dp)) {
+        Canvas(Modifier
+            .fillMaxSize()
+            .padding(20.px.dp)) {
             drawCircle(
                 fireFlyColors.light,
-                style = Stroke(240.px.dp.value)
+                style = Stroke(40.dp.toPx())
             )
         }
     }
