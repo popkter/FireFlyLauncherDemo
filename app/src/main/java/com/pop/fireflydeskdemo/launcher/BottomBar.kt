@@ -1,7 +1,6 @@
 package com.pop.fireflydeskdemo.launcher
 
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,14 +17,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.pop.fireflydeskdemo.R
+import com.pop.fireflydeskdemo.ext.RouteConfig
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
+import com.pop.fireflydeskdemo.ext.routeTo
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,11 +36,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Composable
-fun BottomBar(modifier: Modifier = Modifier, dockViewModel: DockViewModel) {
+fun BottomBar(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    dockViewModel: DockViewModel = hiltViewModel<DockViewModel>(),
+) {
 
     val dockIconsUiState by dockViewModel.dockIconsUiState.collectAsStateWithLifecycle()
-
-    val context = LocalContext.current
 
     val fireFlyColors = LocalFireFlyColors.current
 
@@ -69,11 +73,34 @@ fun BottomBar(modifier: Modifier = Modifier, dockViewModel: DockViewModel) {
                     modifier = Modifier
                         .size(120.px.dp)
                         .clickable {
-                            Toast.makeText(
-                                context,
-                                it.dockInfo.desc.toString(),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            when (it.dockInfo.desc) {
+                                DockViewModel.DockIconType.Camera360 -> {}
+                                DockViewModel.DockIconType.Fan -> {}
+
+                                DockViewModel.DockIconType.Home -> {
+                                    navController.routeTo(RouteConfig.Launcher){
+                                        popUpTo(RouteConfig.Launcher) {
+                                            saveState = true          // 保存目标 destination 的状态
+                                        }
+                                        launchSingleTop = true       // 避免多次实例化同一个 destination
+                                        restoreState = true          // 恢复先前保存的状态
+                                    }
+                                }
+
+                                DockViewModel.DockIconType.Map -> {
+                                    navController.routeTo(RouteConfig.Navigation){
+                                        popUpTo(RouteConfig.Launcher) {
+                                            saveState = true          // 保存目标 destination 的状态
+                                        }
+                                        launchSingleTop = true       // 避免多次实例化同一个 destination
+                                        restoreState = true          // 恢复先前保存的状态
+                                    }
+                                }
+
+                                DockViewModel.DockIconType.Music -> {}
+
+                                DockViewModel.DockIconType.Setting -> {}
+                            }
                         }
                 )
             }
@@ -109,7 +136,7 @@ class DockViewModel @Inject constructor() : ViewModel() {
     }
 
     data class DockUiState(
-        val dockInfo: DockInfo
+        val dockInfo: DockInfo,
     )
 
     sealed class DockIconType {

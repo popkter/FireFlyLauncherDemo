@@ -1,6 +1,11 @@
 package com.pop.fireflydeskdemo.launcher.map
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,16 +18,36 @@ import com.pop.fireflydeskdemo.vm.base.MainComponentViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun NaviComponent(modifier: Modifier = Modifier) {
+fun NaviComponent(
+    modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+    naviToMap: () -> Unit,
+) {
 
-    Image(
-        painter = painterResource(id = R.drawable.map_capture),
-        contentDescription = "",
-        modifier = modifier
-            .clip(RoundedCornerShape(50)),
-        contentScale = ContentScale.FillWidth
-    )
+    with(sharedTransitionScope) {
+        Box(
+            modifier = modifier
+                .clip(RoundedCornerShape(50))
+                .sharedElement(
+                    sharedContentState = sharedTransitionScope.rememberSharedContentState("map"),
+                    animatedVisibilityScope = animatedContentScope,
+                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(50))
+                )
+                .clickable {
+                    naviToMap()
+                }) {
+            Image(
+                modifier = modifier,
+                painter = painterResource(id = R.drawable.map_capture),
+                contentDescription = "",
+                contentScale = ContentScale.FillWidth
+            )
+        }
+
+    }
 }
 
 @HiltViewModel

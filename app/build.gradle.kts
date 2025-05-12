@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.android.material)
     implementation (libs.androidx.material.icons.extended)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.androidx.animation)
 
     implementation(libs.kotlin.reflect)
 
@@ -71,8 +72,10 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
-// Compose Hilt Navigation
+    // Compose Hilt Navigation
     implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation(libs.androidx.navigation.compose)
 
 
     implementation(project(":libnet"))

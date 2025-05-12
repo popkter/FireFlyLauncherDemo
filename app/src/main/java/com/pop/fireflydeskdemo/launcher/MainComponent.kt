@@ -1,6 +1,9 @@
 package com.pop.fireflydeskdemo.launcher
 
 import android.util.Log
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.updateTransition
@@ -54,13 +57,17 @@ import kotlin.math.abs
 
 private const val TAG = "MainComponent"
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainComponent(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
     naviViewModel: NaviViewModel,
     dateViewModel: DateViewModel,
     weatherViewModel: WeatherViewModel,
     memoViewModel: MemoViewModel,
+    naviToMap: () -> Unit,
 ) {
 
     val viewModels = listOf(naviViewModel, dateViewModel, weatherViewModel, memoViewModel)
@@ -101,7 +108,10 @@ fun MainComponent(
         listOf<@Composable () -> Unit>(
             {
                 NaviComponent(
-                    Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope,
+                    naviToMap = { naviToMap() }
                 )
             },
             {
