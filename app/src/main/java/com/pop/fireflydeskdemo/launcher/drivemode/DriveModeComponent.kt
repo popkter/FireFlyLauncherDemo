@@ -1,13 +1,14 @@
-package com.pop.fireflydeskdemo.ui.second_component
+package com.pop.fireflydeskdemo.launcher.drivemode
 
 import android.os.Parcelable
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.PageSize
@@ -16,9 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,17 +29,16 @@ import androidx.compose.ui.unit.Density
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pop.fireflydeskdemo.R
-import com.pop.fireflydeskdemo.ext.distanceBetween
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.launchOnIO
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
-import com.pop.fireflydeskdemo.ui.compose.floorMod
+import com.pop.fireflydeskdemo.launcher.drivemode.DriveModeViewModel.Companion.MODE_COMFORT
+import com.pop.fireflydeskdemo.launcher.drivemode.DriveModeViewModel.Companion.MODE_ECO
+import com.pop.fireflydeskdemo.launcher.drivemode.DriveModeViewModel.Companion.MODE_SPORT
+import com.pop.fireflydeskdemo.launcher.floorMod
 import com.pop.fireflydeskdemo.ui.ext.InfiniteHorizontalPager
 import com.pop.fireflydeskdemo.ui.ext.rememberInfinitePagerState
-import com.pop.fireflydeskdemo.ui.second_component.DriveModeViewModel.Companion.MODE_COMFORT
-import com.pop.fireflydeskdemo.ui.second_component.DriveModeViewModel.Companion.MODE_ECO
-import com.pop.fireflydeskdemo.ui.second_component.DriveModeViewModel.Companion.MODE_SPORT
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.ui.theme.LocalTextColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
@@ -47,6 +46,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 import kotlin.math.abs
@@ -59,47 +59,52 @@ fun DriveModeComponent(
     driveModeViewModel: DriveModeViewModel,
 ) {
 
-    val modeList by driveModeViewModel.modeList.collectAsStateWithLifecycle()
-    val onModeChanged by driveModeViewModel.onModeChanged.collectAsStateWithLifecycle()
+    val modeList by driveModeViewModel.modeListUiState.collectAsStateWithLifecycle()
+
+    val modeUiState by driveModeViewModel.modeUiState.collectAsStateWithLifecycle()
+
+    val scope = rememberCoroutineScope()
+
 
     val fireFlyColors = LocalFireFlyColors.current
     val textColors = LocalTextColors.current
-
-    val actualCount = modeList.size
 
     val initialIndex = Int.MAX_VALUE / 2
 
     val pagerState = rememberInfinitePagerState(initialIndex)
 
-
-    val actualIndex by remember {
-        derivedStateOf {
-            (pagerState.currentPage - initialIndex).floorMod(actualCount)
-        }
-    }
-
-    val currentMode by remember {
-        derivedStateOf {
-            modeList[actualIndex].also {
-                driveModeViewModel.updateMode(it)
-            }
-        }
-    }
-
-
-    LaunchedEffect(Unit) {
-        snapshotFlow { onModeChanged }.collectLatest {
-            val offset = modeList.distanceBetween(currentMode, it)
-            pagerState.animateScrollToPage(actualIndex + offset)
-        }
-    }
-
-    // 这个 PageSize 会在后面传给 Pager
     val threePagesPerViewport = object : PageSize {
         override fun Density.calculateMainAxisPageSize(
             availableSpace: Int, pageSpacing: Int,
         ): Int = (availableSpace - 2 * pageSpacing) / 3
     }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { modeUiState }.collectLatest { controller ->
+
+            val currentIndex = (pagerState.currentPage - initialIndex).floorMod(modeList.size)
+            val aimIndex = modeList.indexOf(controller)
+
+            val rawDiff = aimIndex - currentIndex
+
+            when {
+                rawDiff > modeList.size / 2 -> rawDiff - modeList.size
+                rawDiff < -modeList.size / 2 -> rawDiff + modeList.size
+                else -> rawDiff
+            }.takeIf { it != 0 }?.let {
+                pagerState.animateScrollToPage(pagerState.currentPage + it)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { pagerState.settledPage }.collectLatest {
+            val initialIndex = Int.MAX_VALUE / 2
+            val actualIndex = (it - initialIndex).floorMod(modeList.size)
+            driveModeViewModel.updateMode(modeList[actualIndex])
+        }
+    }
+
 
     Box(
         modifier = Modifier
@@ -107,16 +112,6 @@ fun DriveModeComponent(
             .fillMaxSize()
             .background(fireFlyColors.blueSky, MaterialTheme.shapes.extraLarge)
     ) {
-        Text(
-            modifier = Modifier
-                .wrapContentHeight()
-                .padding(top = 180.px.dp)
-                .align(Alignment.TopCenter),
-            text = currentMode.desc,
-            fontFamily = Mulish,
-            fontSize = 120.px.sp,
-            color = currentMode.getDriveModeIconColor(),
-        )
 
         InfiniteHorizontalPager(
             actualPageCount = modeList.size,
@@ -141,20 +136,37 @@ fun DriveModeComponent(
             val scale = 0.4f + (1 - abs(pageOffset)) * 0.6f
             val alpha = 0.5f + (1 - abs(pageOffset)) * 0.5f
 
-            // TODO: 点击切换
-            Icon(
-                painter = painterResource(id = mode.iconRes),
-                contentDescription = mode.desc,
-                tint = mode.getDriveModeIconColor(),
-                modifier = Modifier
+            Column(
+                Modifier
                     .graphicsLayer {
                         scaleX = scale
                         scaleY = scale
                         this.alpha = alpha
                     }
-                    .size(300.px.dp)
+                    .size(500.px.dp)
+                    .align(Alignment.Center)
+                    .clickable {
+                        scope.launch {
+                            pagerState.animateScrollToPage(virtualIndex)
+                        }
+                    },
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = mode.desc,
+                    fontFamily = Mulish,
+                    fontSize = 120.px.sp,
+                    color = mode.getDriveModeIconColor(),
+                )
 
-            )
+                Icon(
+                    painter = painterResource(id = mode.iconRes),
+                    contentDescription = mode.desc,
+                    tint = mode.getDriveModeIconColor(),
+                    modifier = Modifier.size(300.px.dp)
+                )
+            }
+
         }
     }
 }
@@ -175,25 +187,26 @@ class DriveModeViewModel @Inject constructor() : ViewModel() {
 
     private val controller = mutableListOf(sportMode, ecoMode, comfortMode)
 
-    private val _onModeChanged = MutableStateFlow(sportMode)
-    val onModeChanged = _onModeChanged.asStateFlow()
+
+    private val _modeListUiState = MutableStateFlow(controller)
+    val modeListUiState = _modeListUiState.asStateFlow()
+
+    private val _modeUiState = MutableStateFlow(sportMode)
+    val modeUiState = _modeUiState.asStateFlow()
 
     fun updateMode(controller: DriveModeController) {
         launchOnIO {
             Log.e(TAG, "updateMode: $controller")
             // TODO: 向下更新状态
+            _modeUiState.emit(controller)
         }
     }
 
     fun randomMode() {
         launchOnIO {
-            _onModeChanged.value = controller.random()
+            _modeUiState.value = controller.random()
         }
     }
-
-    private val _modeList = MutableStateFlow(controller)
-
-    val modeList = _modeList.asStateFlow()
 
 }
 

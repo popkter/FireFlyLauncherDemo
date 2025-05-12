@@ -1,7 +1,6 @@
-package com.pop.fireflydeskdemo.ui.main_component
+package com.pop.fireflydeskdemo.launcher.map
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

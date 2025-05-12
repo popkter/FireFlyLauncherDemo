@@ -1,4 +1,4 @@
-package com.pop.fireflydeskdemo.ui.compose
+package com.pop.fireflydeskdemo.launcher
 
 import android.util.Log
 import androidx.compose.animation.animateColor
@@ -38,16 +38,16 @@ import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
 import com.pop.fireflydeskdemo.ui.ext.InfiniteHorizontalPager
 import com.pop.fireflydeskdemo.ui.ext.rememberInfinitePagerState
-import com.pop.fireflydeskdemo.ui.main_component.AnalogClock
-import com.pop.fireflydeskdemo.ui.main_component.DateViewModel
-import com.pop.fireflydeskdemo.ui.main_component.MemoComponent
-import com.pop.fireflydeskdemo.ui.main_component.MemoViewModel
-import com.pop.fireflydeskdemo.ui.main_component.NaviComponent
-import com.pop.fireflydeskdemo.ui.main_component.NaviViewModel
-import com.pop.fireflydeskdemo.ui.main_component.RealTimeWeather
-import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel
-import com.pop.fireflydeskdemo.ui.main_component.getWeatherBackgroundColor
-import com.pop.fireflydeskdemo.ui.main_component.getWeatherContentColor
+import com.pop.fireflydeskdemo.launcher.clock.AnalogClock
+import com.pop.fireflydeskdemo.launcher.clock.DateViewModel
+import com.pop.fireflydeskdemo.launcher.memo.MemoComponent
+import com.pop.fireflydeskdemo.launcher.memo.MemoViewModel
+import com.pop.fireflydeskdemo.launcher.map.NaviComponent
+import com.pop.fireflydeskdemo.launcher.map.NaviViewModel
+import com.pop.fireflydeskdemo.launcher.weather.RealTimeWeather
+import com.pop.fireflydeskdemo.launcher.weather.WeatherViewModel
+import com.pop.fireflydeskdemo.launcher.weather.getWeatherBackgroundColor
+import com.pop.fireflydeskdemo.launcher.weather.getWeatherContentColor
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.ui.theme.Mulish
 import kotlin.math.abs

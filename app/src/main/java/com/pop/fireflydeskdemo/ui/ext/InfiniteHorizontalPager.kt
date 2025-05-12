@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.pop.fireflydeskdemo.ui.compose.floorMod
+import com.pop.fireflydeskdemo.launcher.floorMod
 
 
 /**

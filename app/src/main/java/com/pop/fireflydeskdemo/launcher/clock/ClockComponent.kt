@@ -1,4 +1,4 @@
-package com.pop.fireflydeskdemo.ui.main_component
+package com.pop.fireflydeskdemo.launcher.clock
 
 import android.util.Log
 import androidx.compose.foundation.Canvas
@@ -46,7 +46,7 @@ fun AnalogClock(
     contentColor: Color,
     primaryColor: Color,
     secondaryColor: Color,
-    tertiaryColor: Color
+    tertiaryColor: Color,
 ) {
 
 
@@ -131,7 +131,7 @@ private fun DrawScope.drawHand(
     length: Float,
     angleDegrees: Float,
     color: Color,
-    strokeWidth: Float
+    strokeWidth: Float,
 ) {
     val angleRad = Math.toRadians(angleDegrees - 90.0).toFloat() // 起点在12点方向
 
@@ -224,7 +224,7 @@ class DateViewModel @Inject constructor() : MainComponentViewModel() {
         val date: String,      // 如 4月 30日
         val time: String,      // 如 14:25
         val weekday: String,    // 如 星期二
-        val hour: Int, val minute: Int, val second: Int, val dateTime: LocalDateTime
+        val hour: Int, val minute: Int, val second: Int, val dateTime: LocalDateTime,
     )
 }
 

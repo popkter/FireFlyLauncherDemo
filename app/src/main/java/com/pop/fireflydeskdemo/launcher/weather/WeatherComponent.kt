@@ -1,4 +1,4 @@
-package com.pop.fireflydeskdemo.ui.main_component
+package com.pop.fireflydeskdemo.launcher.weather
 
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
@@ -28,15 +28,15 @@ import com.pop.fireflydeskdemo.R
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.sp
-import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel.Companion.CLEAR_NIGHT
-import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel.Companion.SNOW
-import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel.Companion.RAIN
-import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel.Companion.CLOUDY
-import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel.Companion.CLEAR_DAY
-import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel.Companion.PARTLY_CLOUDY_NIGHT
-import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel.Companion.PARTLY_CLOUDY_DAY
-import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel.Companion.FOG
-import com.pop.fireflydeskdemo.ui.main_component.WeatherViewModel.Companion.WIND
+import com.pop.fireflydeskdemo.launcher.weather.WeatherViewModel.Companion.CLEAR_NIGHT
+import com.pop.fireflydeskdemo.launcher.weather.WeatherViewModel.Companion.SNOW
+import com.pop.fireflydeskdemo.launcher.weather.WeatherViewModel.Companion.RAIN
+import com.pop.fireflydeskdemo.launcher.weather.WeatherViewModel.Companion.CLOUDY
+import com.pop.fireflydeskdemo.launcher.weather.WeatherViewModel.Companion.CLEAR_DAY
+import com.pop.fireflydeskdemo.launcher.weather.WeatherViewModel.Companion.PARTLY_CLOUDY_NIGHT
+import com.pop.fireflydeskdemo.launcher.weather.WeatherViewModel.Companion.PARTLY_CLOUDY_DAY
+import com.pop.fireflydeskdemo.launcher.weather.WeatherViewModel.Companion.FOG
+import com.pop.fireflydeskdemo.launcher.weather.WeatherViewModel.Companion.WIND
 import com.pop.fireflydeskdemo.ui.theme.AppTheme
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.pop.fireflydeskdemo.ui.theme.LocalWeatherColors
