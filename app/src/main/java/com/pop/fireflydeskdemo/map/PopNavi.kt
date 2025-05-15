@@ -12,6 +12,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.pop.fireflydeskdemo.R
+import com.pop.fireflydeskdemo.ui.ext.DynamicBorderTextView
 import com.pop.fireflydeskdemo.ui.theme.AppTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -36,6 +37,9 @@ fun PopNavi(
                 contentDescription = "",
                 contentScale = ContentScale.Crop
             )
+
+
+            DynamicBorderTextView("hahaha")
         }
     }
 
