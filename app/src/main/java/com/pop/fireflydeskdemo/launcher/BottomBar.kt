@@ -1,23 +1,45 @@
 package com.pop.fireflydeskdemo.launcher
 
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,17 +50,22 @@ import com.pop.fireflydeskdemo.ext.RouteConfig
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.routeTo
+import com.pop.fireflydeskdemo.launcher.robot.RobotFace
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
+import com.popkter.robot.Robot
+import com.popkter.robot.viewmodel.RobotViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun BottomBar(
     modifier: Modifier = Modifier,
     navController: NavController,
+    robotViewModel: RobotViewModel,
     dockViewModel: DockViewModel = hiltViewModel<DockViewModel>(),
 ) {
 
@@ -46,23 +73,49 @@ fun BottomBar(
 
     val fireFlyColors = LocalFireFlyColors.current
 
-    Box(modifier) {
+    var vpaStatus by remember { mutableStateOf(false) }
+
+    Row(modifier) {
+
+        AnimatedVisibility(vpaStatus) {
+            BoxWithConstraints(
+                modifier = Modifier
+                    .padding(end = 50.px.dp)
+                    .size(200.px.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .then(Modifier.layout { measurable, _ ->
+                            val placeable = measurable.measure(Constraints())
+                            layout(placeable.width, placeable.height) {
+                                placeable.place(0, 0)
+                            }
+                        })
+                        .size(200.dp, 200.dp)
+                        .scale(.4F)
+                ) {
+                    RobotFace(robotViewModel = robotViewModel)
+                }
+            }
+        }
+
+
         LazyRow(
             modifier = Modifier
                 .wrapContentWidth()
                 .height(200.px.dp)
                 .background(color = fireFlyColors.light, shape = MaterialTheme.shapes.large)
-                .padding(horizontal = 50.px.dp)
-                .align(Alignment.TopEnd),
+                .padding(horizontal = 50.px.dp),
+//                .align(Alignment.TopEnd),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(80.px.dp),
         ) {
 
-            items(dockIconsUiState) {
+            items(dockIconsUiState) { dockIconsUiState ->
                 Icon(
-                    painter = painterResource(it.dockInfo.iconRes),
-                    contentDescription = it.dockInfo.desc.toString(),
-                    tint = when (it.dockInfo.desc) {
+                    painter = painterResource(dockIconsUiState.dockInfo.iconRes),
+                    contentDescription = dockIconsUiState.dockInfo.desc.toString(),
+                    tint = when (dockIconsUiState.dockInfo.desc) {
                         DockViewModel.DockIconType.Camera360 -> fireFlyColors.night
                         DockViewModel.DockIconType.Fan -> fireFlyColors.orange
                         DockViewModel.DockIconType.Home -> fireFlyColors.blueSea
@@ -73,12 +126,12 @@ fun BottomBar(
                     modifier = Modifier
                         .size(120.px.dp)
                         .clickable {
-                            when (it.dockInfo.desc) {
+                            when (dockIconsUiState.dockInfo.desc) {
                                 DockViewModel.DockIconType.Camera360 -> {}
                                 DockViewModel.DockIconType.Fan -> {}
 
                                 DockViewModel.DockIconType.Home -> {
-                                    navController.routeTo(RouteConfig.Launcher){
+                                    navController.routeTo(RouteConfig.Launcher) {
                                         popUpTo(RouteConfig.Launcher) {
                                             saveState = true          // 保存目标 destination 的状态
                                         }
@@ -88,7 +141,7 @@ fun BottomBar(
                                 }
 
                                 DockViewModel.DockIconType.Map -> {
-                                    navController.routeTo(RouteConfig.Navigation){
+                                    navController.routeTo(RouteConfig.Navigation) {
                                         popUpTo(RouteConfig.Launcher) {
                                             saveState = true          // 保存目标 destination 的状态
                                         }
@@ -101,6 +154,15 @@ fun BottomBar(
 
                                 DockViewModel.DockIconType.Setting -> {}
                             }
+                        }
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = {
+                                    if (dockIconsUiState.dockInfo.desc == DockViewModel.DockIconType.Home) {
+                                        vpaStatus = !vpaStatus
+                                    }
+                                }
+                            )
                         }
                 )
             }

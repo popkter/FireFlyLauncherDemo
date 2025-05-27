@@ -11,7 +11,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
@@ -26,17 +26,17 @@ import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.routeTo
 import com.pop.fireflydeskdemo.launcher.BottomBar
-import com.pop.fireflydeskdemo.launcher.DockViewModel
 import com.pop.fireflydeskdemo.launcher.PopLauncher
 import com.pop.fireflydeskdemo.map.PopNavi
 import com.pop.fireflydeskdemo.ui.theme.AppTheme
+import com.popkter.robot.viewmodel.RobotViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val dockViewModel by viewModels<DockViewModel>()
+    private val robotViewModel by viewModels<RobotViewModel>()
 
     @OptIn(ExperimentalSharedTransitionApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,9 +108,10 @@ class MainActivity : ComponentActivity() {
 
                     BottomBar(
                         Modifier
-                            .padding(start = 50.px.dp, bottom = 50.px.dp)
+                            .offset(x = 50.px.dp, y = -50.px.dp)
                             .align(Alignment.BottomStart),
-                        navController
+                        navController,
+                        robotViewModel
                     )
                 }
             }
