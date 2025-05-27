@@ -78,7 +78,7 @@ fun MainComponent(
 
     val memoUiState by memoViewModel.memoUiState.collectAsStateWithLifecycle()
 
-    val actualCount = 4
+    val actualCount = 5
 
     val initialIndex = Int.MAX_VALUE / 2
 
@@ -134,7 +134,7 @@ fun MainComponent(
             {
                 MemoComponent(
                     Modifier.fillMaxSize(),
-//                    memoUiState
+                    memoUiState
                 )
             },
             {
@@ -155,7 +155,7 @@ fun MainComponent(
         //Display
         InfiniteHorizontalPager(
             state = pagerState,
-            actualPageCount = 4,
+            actualPageCount = actualCount,
             modifier = Modifier
                 .clip(MaterialTheme.shapes.large)
                 .clipToBounds()
@@ -217,14 +217,14 @@ fun MainComponent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(80.px.dp),
                 ) {
-                    items(controller, key = { it }) { (desc, iconRes) ->
+                    items(controller, key = { it }) { (desc, iconRes,event) ->
                         Icon(
                             painter = painterResource(iconRes),
                             contentDescription = desc,
                             modifier = Modifier
                                 .size(120.px.dp)
                                 .clickable {
-
+                                    event()
                                 },
                             tint = if (iconRes == R.drawable.to_warn) Color.Red else controllerContentColor
                         )

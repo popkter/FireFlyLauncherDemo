@@ -2,26 +2,19 @@ package com.pop.fireflydeskdemo.launcher
 
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -31,10 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
@@ -52,7 +42,6 @@ import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.routeTo
 import com.pop.fireflydeskdemo.launcher.robot.RobotFace
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
-import com.popkter.robot.Robot
 import com.popkter.robot.viewmodel.RobotViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -125,41 +114,41 @@ fun BottomBar(
                     },
                     modifier = Modifier
                         .size(120.px.dp)
-                        .clickable {
-                            when (dockIconsUiState.dockInfo.desc) {
-                                DockViewModel.DockIconType.Camera360 -> {}
-                                DockViewModel.DockIconType.Fan -> {}
-
-                                DockViewModel.DockIconType.Home -> {
-                                    navController.routeTo(RouteConfig.Launcher) {
-                                        popUpTo(RouteConfig.Launcher) {
-                                            saveState = true          // 保存目标 destination 的状态
-                                        }
-                                        launchSingleTop = true       // 避免多次实例化同一个 destination
-                                        restoreState = true          // 恢复先前保存的状态
-                                    }
-                                }
-
-                                DockViewModel.DockIconType.Map -> {
-                                    navController.routeTo(RouteConfig.Navigation) {
-                                        popUpTo(RouteConfig.Launcher) {
-                                            saveState = true          // 保存目标 destination 的状态
-                                        }
-                                        launchSingleTop = true       // 避免多次实例化同一个 destination
-                                        restoreState = true          // 恢复先前保存的状态
-                                    }
-                                }
-
-                                DockViewModel.DockIconType.Music -> {}
-
-                                DockViewModel.DockIconType.Setting -> {}
-                            }
-                        }
                         .pointerInput(Unit) {
                             detectTapGestures(
                                 onLongPress = {
                                     if (dockIconsUiState.dockInfo.desc == DockViewModel.DockIconType.Home) {
                                         vpaStatus = !vpaStatus
+                                    }
+                                },
+                                onTap = {
+                                    when (dockIconsUiState.dockInfo.desc) {
+                                        DockViewModel.DockIconType.Camera360 -> {}
+                                        DockViewModel.DockIconType.Fan -> {}
+
+                                        DockViewModel.DockIconType.Home -> {
+                                            navController.routeTo(RouteConfig.Launcher) {
+                                                popUpTo(RouteConfig.Launcher) {
+                                                    saveState = true          // 保存目标 destination 的状态
+                                                }
+                                                launchSingleTop = true       // 避免多次实例化同一个 destination
+                                                restoreState = true          // 恢复先前保存的状态
+                                            }
+                                        }
+
+                                        DockViewModel.DockIconType.Map -> {
+                                            navController.routeTo(RouteConfig.Navigation) {
+                                                popUpTo(RouteConfig.Launcher) {
+                                                    saveState = true          // 保存目标 destination 的状态
+                                                }
+                                                launchSingleTop = true       // 避免多次实例化同一个 destination
+                                                restoreState = true          // 恢复先前保存的状态
+                                            }
+                                        }
+
+                                        DockViewModel.DockIconType.Music -> {}
+
+                                        DockViewModel.DockIconType.Setting -> {}
                                     }
                                 }
                             )

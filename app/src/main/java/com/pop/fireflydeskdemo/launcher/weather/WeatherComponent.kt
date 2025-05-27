@@ -236,15 +236,21 @@ class WeatherViewModel @Inject constructor() : MainComponentViewModel() {
         MainComponentController(
             TO_PLAY,
             R.drawable.to_play
-        ),
+        ) {
+            randomWeather()
+        },
         MainComponentController(
             TO_LOCATION,
             R.drawable.to_location
-        ),
+        ) {
+            randomWeather()
+        },
         MainComponentController(
             TO_WRAN,
             R.drawable.to_warn
-        )
+        ) {
+            randomWeather()
+        }
     )
 
     override fun onControllerClick(controller: MainComponentController) {
@@ -278,7 +284,7 @@ class WeatherViewModel @Inject constructor() : MainComponentViewModel() {
     }
 
 
-    fun updateWeather() {
+    fun randomWeather() {
         viewModelScope.launch {
             val data = WeatherUiState.all.random()
             _weatherUiState.value = data.copy(temp = (0..30).map { it.toDouble() }.random())

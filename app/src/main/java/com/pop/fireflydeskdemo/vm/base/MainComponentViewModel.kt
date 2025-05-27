@@ -17,5 +17,6 @@ open class MainComponentViewModel : ViewModel() {
 @Parcelize
 data class MainComponentController(
     val desc: String,
-    val iconRes: Int
-): Parcelable
+    val iconRes: Int,
+    val onClick: () -> Unit = {}
+) : Parcelable
