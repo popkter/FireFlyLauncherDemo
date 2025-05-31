@@ -152,39 +152,24 @@ class MainActivity : ComponentActivity() {
                         exit = scaleOut() + fadeOut()
 
                     ) {
-                        FloatingActionButton(
-                            onClick = {},
+                        BoxWithConstraints(
                             modifier = Modifier
-                                .padding(0.dp),
-                            shape = RoundedCornerShape(50),
-                            containerColor = Color.Transparent,
-                            elevation = FloatingActionButtonDefaults.elevation(
-                                defaultElevation = 0.dp,
-                                pressedElevation = 0.dp,
-                                hoveredElevation = 0.dp,
-                                focusedElevation = 0.dp
-                            )
+                                .size(200.px.dp)
                         ) {
-                            BoxWithConstraints(
+                            Box(
                                 modifier = Modifier
-                                    .size(200.px.dp)
+                                    .then(Modifier.layout { measurable, _ ->
+                                        val placeable = measurable.measure(Constraints())
+                                        layout(placeable.width, placeable.height) {
+                                            placeable.place(0, 0)
+                                        }
+                                    })
+                                    .size(200.dp, 200.dp)
+                                    .scale(.4F)
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .then(Modifier.layout { measurable, _ ->
-                                            val placeable = measurable.measure(Constraints())
-                                            layout(placeable.width, placeable.height) {
-                                                placeable.place(0, 0)
-                                            }
-                                        })
-                                        .size(200.dp, 200.dp)
-                                        .scale(.4F)
-                                ) {
-                                    RobotFace(robotViewModel = robotViewModel)
-                                }
+                                RobotFace(robotViewModel = robotViewModel)
                             }
                         }
-
                     }
                 }
 
