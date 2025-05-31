@@ -41,6 +41,7 @@ import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.routeTo
 import com.pop.fireflydeskdemo.launcher.robot.RobotFace
+import com.pop.fireflydeskdemo.launcher.robot.RobotFaceViewModel
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.popkter.robot.viewmodel.RobotViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,41 +55,16 @@ import javax.inject.Inject
 fun BottomBar(
     modifier: Modifier = Modifier,
     navController: NavController,
-    robotViewModel: RobotViewModel,
     dockViewModel: DockViewModel = hiltViewModel<DockViewModel>(),
+    onRobotVisibleChanged: () -> Unit = {}
 ) {
 
     val dockIconsUiState by dockViewModel.dockIconsUiState.collectAsStateWithLifecycle()
 
     val fireFlyColors = LocalFireFlyColors.current
 
-    var vpaStatus by remember { mutableStateOf(false) }
 
     Row(modifier) {
-
-        AnimatedVisibility(vpaStatus) {
-            BoxWithConstraints(
-                modifier = Modifier
-                    .padding(end = 50.px.dp)
-                    .size(200.px.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .then(Modifier.layout { measurable, _ ->
-                            val placeable = measurable.measure(Constraints())
-                            layout(placeable.width, placeable.height) {
-                                placeable.place(0, 0)
-                            }
-                        })
-                        .size(200.dp, 200.dp)
-                        .scale(.4F)
-                ) {
-                    RobotFace(robotViewModel = robotViewModel)
-                }
-            }
-        }
-
-
         LazyRow(
             modifier = Modifier
                 .wrapContentWidth()
@@ -118,7 +94,7 @@ fun BottomBar(
                             detectTapGestures(
                                 onLongPress = {
                                     if (dockIconsUiState.dockInfo.desc == DockViewModel.DockIconType.Home) {
-                                        vpaStatus = !vpaStatus
+                                        onRobotVisibleChanged.invoke()
                                     }
                                 },
                                 onTap = {
@@ -129,9 +105,11 @@ fun BottomBar(
                                         DockViewModel.DockIconType.Home -> {
                                             navController.routeTo(RouteConfig.Launcher) {
                                                 popUpTo(RouteConfig.Launcher) {
-                                                    saveState = true          // 保存目标 destination 的状态
+                                                    saveState =
+                                                        true          // 保存目标 destination 的状态
                                                 }
-                                                launchSingleTop = true       // 避免多次实例化同一个 destination
+                                                launchSingleTop =
+                                                    true       // 避免多次实例化同一个 destination
                                                 restoreState = true          // 恢复先前保存的状态
                                             }
                                         }
@@ -139,9 +117,11 @@ fun BottomBar(
                                         DockViewModel.DockIconType.Map -> {
                                             navController.routeTo(RouteConfig.Navigation) {
                                                 popUpTo(RouteConfig.Launcher) {
-                                                    saveState = true          // 保存目标 destination 的状态
+                                                    saveState =
+                                                        true          // 保存目标 destination 的状态
                                                 }
-                                                launchSingleTop = true       // 避免多次实例化同一个 destination
+                                                launchSingleTop =
+                                                    true       // 避免多次实例化同一个 destination
                                                 restoreState = true          // 恢复先前保存的状态
                                             }
                                         }

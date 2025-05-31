@@ -74,7 +74,7 @@ fun PopLauncher(
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .clip(MaterialTheme.shapes.large)
+//            .clip(MaterialTheme.shapes.large)
             .background(
                 color = colorScheme.lime
             )
