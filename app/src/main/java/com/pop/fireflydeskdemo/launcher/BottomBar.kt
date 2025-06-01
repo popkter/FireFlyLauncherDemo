@@ -2,12 +2,9 @@ package com.pop.fireflydeskdemo.launcher
 
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,17 +16,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,10 +30,7 @@ import com.pop.fireflydeskdemo.ext.RouteConfig
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.routeTo
-import com.pop.fireflydeskdemo.launcher.robot.RobotFace
-import com.pop.fireflydeskdemo.launcher.robot.RobotFaceViewModel
 import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
-import com.popkter.robot.viewmodel.RobotViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -59,7 +46,7 @@ fun BottomBar(
     onRobotVisibleChanged: () -> Unit = {}
 ) {
 
-    val dockIconsUiState by dockViewModel.dockIconsUiState.collectAsStateWithLifecycle()
+    val dockIconsUiState by dockViewModel.dockProfileState.collectAsStateWithLifecycle()
 
     val fireFlyColors = LocalFireFlyColors.current
 
@@ -78,9 +65,9 @@ fun BottomBar(
 
             items(dockIconsUiState) { dockIconsUiState ->
                 Icon(
-                    painter = painterResource(dockIconsUiState.dockInfo.iconRes),
-                    contentDescription = dockIconsUiState.dockInfo.desc.toString(),
-                    tint = when (dockIconsUiState.dockInfo.desc) {
+                    painter = painterResource(dockIconsUiState.iconRes),
+                    contentDescription = dockIconsUiState.desc.toString(),
+                    tint = when (dockIconsUiState.desc) {
                         DockViewModel.DockIconType.Camera360 -> fireFlyColors.night
                         DockViewModel.DockIconType.Fan -> fireFlyColors.orange
                         DockViewModel.DockIconType.Home -> fireFlyColors.blueSea
@@ -93,12 +80,12 @@ fun BottomBar(
                         .pointerInput(Unit) {
                             detectTapGestures(
                                 onLongPress = {
-                                    if (dockIconsUiState.dockInfo.desc == DockViewModel.DockIconType.Home) {
+                                    if (dockIconsUiState.desc == DockViewModel.DockIconType.Home) {
                                         onRobotVisibleChanged.invoke()
                                     }
                                 },
                                 onTap = {
-                                    when (dockIconsUiState.dockInfo.desc) {
+                                    when (dockIconsUiState.desc) {
                                         DockViewModel.DockIconType.Camera360 -> {}
                                         DockViewModel.DockIconType.Fan -> {}
 
@@ -144,30 +131,36 @@ class DockViewModel @Inject constructor() : ViewModel() {
 
     companion object {
 
-        val dockIcons = listOf(
-            DockInfo(DockIconType.Home, R.drawable.icon_dock_home),
-            DockInfo(DockIconType.Setting, R.drawable.icon_dock_suzuki),
-            DockInfo(DockIconType.Music, R.drawable.icon_dock_music),
-            DockInfo(DockIconType.Map, R.drawable.icon_dock_navi),
-            DockInfo(DockIconType.Fan, R.drawable.icon_dock_fan),
-            DockInfo(DockIconType.Camera360, R.drawable.icon_dock_360),
+        val _dockProfile = listOf(
+            DockUiState(DockIconType.Home, R.drawable.icon_dock_home),
+            DockUiState(DockIconType.Setting, R.drawable.icon_dock_suzuki),
+            DockUiState(DockIconType.Music, R.drawable.icon_dock_music),
+            DockUiState(DockIconType.Map, R.drawable.icon_dock_navi),
+            DockUiState(DockIconType.Fan, R.drawable.icon_dock_fan),
+            DockUiState(DockIconType.Camera360, R.drawable.icon_dock_360),
         )
     }
 
 
-    private val _dockIconsUiState = MutableStateFlow<List<DockUiState>>(emptyList())
-    val dockIconsUiState = _dockIconsUiState.asStateFlow()
+    private val _dockProfileState = MutableStateFlow<List<DockUiState>>(emptyList())
+    val dockProfileState = _dockProfileState.asStateFlow()
+
+    private val _dockTypeState = MutableStateFlow<DockIconType>(DockIconType.Home)
+    val dockTypeState = _dockTypeState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            _dockIconsUiState.emit(dockIcons.map { info ->
-                DockUiState(info)
-            })
+            _dockProfileState.emit(_dockProfile)
         }
     }
 
+    fun updateDock(dockType: DockIconType) {
+        _dockTypeState.value = if (dockType == _dockTypeState.value) DockIconType.Home else dockType
+    }
+
     data class DockUiState(
-        val dockInfo: DockInfo,
+        val desc: DockIconType,
+        val iconRes: Int,
     )
 
     sealed class DockIconType {
@@ -178,9 +171,4 @@ class DockViewModel @Inject constructor() : ViewModel() {
         data object Fan : DockIconType()
         data object Camera360 : DockIconType()
     }
-
-    data class DockInfo(
-        val desc: DockIconType,
-        val iconRes: Int,
-    )
 }

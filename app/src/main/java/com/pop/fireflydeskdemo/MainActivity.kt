@@ -13,24 +13,30 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.FloatingActionButtonElevation
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
@@ -44,22 +50,25 @@ import com.pop.fireflydeskdemo.ext.RouteConfig
 import com.pop.fireflydeskdemo.ext.dp
 import com.pop.fireflydeskdemo.ext.px
 import com.pop.fireflydeskdemo.ext.routeTo
-import com.pop.fireflydeskdemo.launcher.BottomBar
+import com.pop.fireflydeskdemo.launcher.DockViewModel
 import com.pop.fireflydeskdemo.launcher.PopLauncher
 import com.pop.fireflydeskdemo.launcher.robot.RobotFace
 import com.pop.fireflydeskdemo.launcher.robot.RobotFaceViewModel
 import com.pop.fireflydeskdemo.map.PopNavi
 import com.pop.fireflydeskdemo.ui.theme.AppTheme
-import com.pop.fireflydeskdemo.ui.theme.shapes
+import com.pop.fireflydeskdemo.ui.theme.LocalFireFlyColors
 import com.popkter.robot.viewmodel.RobotViewModel
 import dagger.hilt.android.AndroidEntryPoint
-
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.selects.select
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val robotViewModel by viewModels<RobotViewModel>()
     private val robotFaceViewModel by viewModels<RobotFaceViewModel>()
+
+    private val dockViewModel by viewModels<DockViewModel>()
 
     @SuppressLint("UnusedBoxWithConstraintsScope")
     @OptIn(ExperimentalSharedTransitionApi::class)
@@ -72,11 +81,48 @@ class MainActivity : ComponentActivity() {
 
             AppTheme {
                 val navController = rememberNavController()
+                val fireFlyColors = LocalFireFlyColors.current
                 val robotVisible by robotFaceViewModel.robotVisibleState.collectAsStateWithLifecycle()
+                val docksProfile by dockViewModel.dockProfileState.collectAsStateWithLifecycle()
+                val dockTypeState by dockViewModel.dockTypeState.collectAsStateWithLifecycle()
+
+                LaunchedEffect(Unit) {
+                    snapshotFlow { dockTypeState }.collectLatest {
+                        when (it) {
+                            DockViewModel.DockIconType.Camera360 -> {}
+                            DockViewModel.DockIconType.Fan -> {}
+
+                            DockViewModel.DockIconType.Home -> {
+                                navController.routeTo(RouteConfig.Launcher) {
+                                    popUpTo(RouteConfig.Launcher) {
+                                        saveState = true          // 保存目标 destination 的状态
+                                    }
+                                    launchSingleTop = true       // 避免多次实例化同一个 destination
+                                    restoreState = true          // 恢复先前保存的状态
+                                }
+                            }
+
+                            DockViewModel.DockIconType.Map -> {
+                                navController.routeTo(RouteConfig.Navigation) {
+                                    popUpTo(RouteConfig.Launcher) {
+                                        saveState = true          // 保存目标 destination 的状态
+                                    }
+                                    launchSingleTop = true       // 避免多次实例化同一个 destination
+                                    restoreState = true          // 恢复先前保存的状态
+                                }
+                            }
+
+                            DockViewModel.DockIconType.Music -> {}
+
+                            DockViewModel.DockIconType.Setting -> {}
+                        }
+                    }
+                }
 
                 SharedTransitionLayout(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(fireFlyColors.lime)
                 ) {
 
                     NavHost(
@@ -131,14 +177,41 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) {
 
-                    // TODO: Use NavigationBar
-                    BottomBar(
-                        Modifier
-                            .offset(x = 50.px.dp, y = -50.px.dp)
-                            .align(Alignment.BottomStart),
-                        navController
+                    NavigationBar(
+                        modifier = Modifier
+                            .padding(50.px.dp)
+                            .align(Alignment.BottomStart)
+                            .clip(MaterialTheme.shapes.large),
+                        containerColor = fireFlyColors.grape
                     ) {
-                        robotFaceViewModel.triggerVisible()
+                        docksProfile.onEach { (dockType, iconRes) ->
+                            NavigationBarItem(
+                                modifier = Modifier
+                                    .size(120.px.dp),
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(iconRes),
+                                        contentDescription = dockType.toString(),
+                                        tint = if (dockType == dockTypeState) {
+                                            fireFlyColors.lime
+                                        } else {
+                                            when (dockType) {
+                                                DockViewModel.DockIconType.Camera360 -> fireFlyColors.night
+                                                DockViewModel.DockIconType.Fan -> fireFlyColors.orange
+                                                DockViewModel.DockIconType.Home -> fireFlyColors.blueSea
+                                                DockViewModel.DockIconType.Map -> fireFlyColors.blueSea
+                                                DockViewModel.DockIconType.Music -> fireFlyColors.rose
+                                                DockViewModel.DockIconType.Setting -> fireFlyColors.darkLoam
+                                            }
+                                        },
+                                    )
+                                },
+                                selected = /*dockType == dockTypeState*/ false,
+                                onClick = {
+                                    dockViewModel.updateDock(dockType)
+                                },
+                            )
+                        }
                     }
 
                     AnimatedVisibility(
